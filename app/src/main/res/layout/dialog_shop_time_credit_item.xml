@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="300dp"
-    android:layout_height="40dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/textViewSteps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/textViewTradeOffer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dialog_list_item_height"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="@dimen/dialog_vertical_margin"
+        android:paddingTop="@dimen/dialog_vertical_margin"
+        android:gravity="center_vertical|center_horizontal"
         android:drawableStart="@drawable/ic_directions_walk_black_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        style="@style/Widget.AppCompat.Button.Borderless"
         tools:text="TextView" />
-
-    <TextView
-        android:id="@+id/textViewTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/ic_access_time_black_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="TextView" />
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

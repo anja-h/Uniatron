@@ -27,6 +27,9 @@ public class MainApplication extends Application {
         mDataRepository.addAppUsage("Spotify", 92);
         mDataRepository.addStepCount(11);
         mDataRepository.addStepCount(1734);
+        mDataRepository.addStepCount(3847);
+        mDataRepository.addStepCount(34);
+        mDataRepository.addStepCount(784);
         //mDataRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
     }
 

@@ -63,6 +63,7 @@ public class HomeViewModel extends AndroidViewModel {
      *
      * @return The app usage.
      */
+    @NonNull
     public LiveData<Map<String, Double>> getAppUsageOfTop3Apps() {
         return Transformations.map(mObservableAppUsages, data -> extractValues(data, MAX_COUNT));
     }
@@ -72,6 +73,7 @@ public class HomeViewModel extends AndroidViewModel {
      *
      * @return The step counts.
      */
+    @NonNull
     public LiveData<Integer> getStepCountsToday() {
         return Transformations.map(mObservableStepCount, data -> data != null ? data : 0);
     }
@@ -81,10 +83,12 @@ public class HomeViewModel extends AndroidViewModel {
      *
      * @return The remaining step count.
      */
+    @NonNull
     public LiveData<Integer> getRemainingStepCountToday() {
         return Transformations.map(mObservableRemainingStepCount, data -> data != null ? data : 0);
     }
 
+    @NonNull
     private Map<String, Double> extractValues(final Map<String, Double> data, final int maxCount) {
         if (data == null) {
             return Collections.emptyMap();

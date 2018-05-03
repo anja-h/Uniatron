@@ -58,11 +58,23 @@ public class HomeFragment extends Fragment {
         mAppUsagePieChart.getDescription().setEnabled(false);
         mAppUsagePieChart.setDrawHoleEnabled(true);
         mAppUsagePieChart.setDrawCenterText(true);
+        mAppUsagePieChart.setClickable(false);
+        mAppUsagePieChart.setRotationEnabled(false);
+        mAppUsagePieChart.setHardwareAccelerationEnabled(true);
+        mAppUsagePieChart.getLegend().setEnabled(false);
+        mAppUsagePieChart.setNoDataText(getString(R.string.home_chart_no_data));
+        mAppUsagePieChart.setCenterTextColor(getResources().getColor(R.color.primaryTextColor));
+        mAppUsagePieChart.setCenterTextSize(getResources().getDimension(R.dimen.chart_title_text_size));
+        mAppUsagePieChart.setEntryLabelTextSize(getResources().getDimension(R.dimen.chart_value_text_size));
+        mAppUsagePieChart.setEntryLabelColor(getResources().getColor(R.color.primaryTextColor));
 
         final PieDataSet pieDataSet = new PieDataSet(new ArrayList<>(), "");
         pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         final PieData pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter());
+        pieData.setValueTextSize(getResources().getDimension(R.dimen.chart_value_text_size));
+        pieData.setValueTextColor(getResources().getColor(R.color.primaryTextColor));
+        mAppUsagePieChart.setData(pieData);
 
         final HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
@@ -78,15 +90,12 @@ public class HomeFragment extends Fragment {
                 }
                 pieDataSet.addEntry(new PieEntry(1 - value, getString(R.string.app_others)));
             }
-            pieDataSet.notifyDataSetChanged();
-            pieData.notifyDataChanged();
-            mAppUsagePieChart.animateY(1000, Easing.EasingOption.EaseInElastic);
+            mAppUsagePieChart.animateY(2000, Easing.EasingOption.EaseInQuad);
             mAppUsagePieChart.notifyDataSetChanged();
-            mAppUsagePieChart.invalidate();
         });
 
         homeViewModel.getStepCountsToday().observe(this, stepCount -> {
-            mAppUsagePieChart.setCenterText(String.valueOf(stepCount));
+            mAppUsagePieChart.setCenterText(getString(R.string.pie_chart_center_text, stepCount));
         });
 
         homeViewModel.getRemainingStepCountToday().observe(this, stepCount -> {
