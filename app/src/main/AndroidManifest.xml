@@ -18,6 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".stepcounter.StepCountService"
+            android:label="StepCountService" >
+        </service>
     </application>
+
+    <uses-permission android:name="android.permission.BODY_SENSORS"/>
+
 
 </manifest>
