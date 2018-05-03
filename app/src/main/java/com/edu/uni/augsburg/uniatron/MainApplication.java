@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
 import com.edu.uni.augsburg.uniatron.domain.DataRepository;
+import com.edu.uni.augsburg.uniatron.model.TimeCreditItem;
 
 /**
  * The application context for this app.
@@ -30,7 +31,7 @@ public class MainApplication extends Application {
         mDataRepository.addStepCount(3847);
         mDataRepository.addStepCount(34);
         mDataRepository.addStepCount(784);
-        //mDataRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
+        mDataRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
     }
 
     /**

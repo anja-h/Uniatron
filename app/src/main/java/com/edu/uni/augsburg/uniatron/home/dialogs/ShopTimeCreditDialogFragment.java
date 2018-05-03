@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
@@ -42,6 +43,8 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
     TextView mTextViewError;
     @BindView(R.id.timeCreditRecyclerView)
     RecyclerView mRecyclerView;
+    @BindView(R.id.tradeButton)
+    Button mTradeButton;
 
     private TimeCreditListAdapter mAdapter;
 
@@ -173,6 +176,8 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
                 if(mSelectionIndex == getAdapterPosition()) {
                     mTextViewTradeOffer.setBackgroundColor(mDefaultBackgroundColor);
                     mSelectionIndex = -1;
+
+                    mTradeButton.setEnabled(false);
                 } else {
                     // reset all items to default color
                     Stream.of(viewHolders).forEach(view -> view.mTextViewTradeOffer
@@ -182,6 +187,8 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
                     final int color = getResources().getColor(R.color.secondaryLightColor);
                     mTextViewTradeOffer.setBackgroundColor(color);
                     mSelectionIndex = getAdapterPosition();
+
+                    mTradeButton.setEnabled(true);
                 }
             }
         }
