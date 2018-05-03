@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMaxDate;
+import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMaxTimeOfDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMinTimeOfDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getLiveDataValue;
@@ -55,7 +55,7 @@ public class TimeCreditDaoTest {
 
         final Date date = getDate(1, 1, 2018);
         final LiveData<Integer> data = mDao
-                .loadTimeCredits(extractMinTimeOfDate(date), extractMaxDate(date));
+                .loadTimeCredits(extractMinTimeOfDate(date), extractMaxTimeOfDate(date));
 
         assertThat(getLiveDataValue(data), is(10));
     }

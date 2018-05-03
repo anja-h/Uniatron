@@ -47,8 +47,11 @@ public interface StepCountDao {
      * @param dateTo The date to end searching.
      * @return The step count.
      */
-    @Query("SELECT SUM(step_count) - (SELECT SUM(time_in_minutes) * 60 FROM TimeCreditEntity "
-            + "WHERE timestamp BETWEEN :dateFrom AND :dateTo) FROM StepCountEntity "
+    @Query("SELECT (CASE WHEN SUM(step_count) IS NOT NULL THEN SUM(step_count) ELSE 0 END) - "
+            + "(SELECT CASE WHEN SUM(steps) IS NOT NULL THEN SUM(steps) ELSE 0 END "
+            + "FROM TimeCreditEntity "
+            + "WHERE TimeCreditEntity.timestamp BETWEEN :dateFrom AND :dateTo) "
+            + "FROM StepCountEntity "
             + "WHERE timestamp BETWEEN :dateFrom AND :dateTo")
     LiveData<Integer> loadRemainingStepCount(Date dateFrom, Date dateTo);
 }

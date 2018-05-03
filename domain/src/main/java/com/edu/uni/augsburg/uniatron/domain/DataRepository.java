@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMaxDate;
+import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMaxTimeOfDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMinTimeOfDate;
 
 /**
@@ -45,6 +45,7 @@ public final class DataRepository {
     public TimeCredit addTimeCredit(@NonNull final TimeCreditItem timeCreditItem) {
         final TimeCreditEntity timeCreditEntity = new TimeCreditEntity();
         timeCreditEntity.setTimeInMinutes(timeCreditItem.getTimeInMinutes());
+        timeCreditEntity.setStepCount(timeCreditItem.getStepCount());
         timeCreditEntity.setTimestamp(new Date());
         mDatabase.timeCreditDao().add(timeCreditEntity);
         return timeCreditEntity;
@@ -69,7 +70,7 @@ public final class DataRepository {
     @NonNull
     public LiveData<Integer> getTimeCreditsByDate(@NonNull final Date date) {
         final Date dateFrom = extractMinTimeOfDate(date);
-        final Date dateTo = extractMaxDate(date);
+        final Date dateTo = extractMaxTimeOfDate(date);
         return mDatabase.timeCreditDao().loadTimeCredits(dateFrom, dateTo);
     }
 
@@ -106,7 +107,7 @@ public final class DataRepository {
     @NonNull
     public LiveData<Integer> getStepCountsByDate(@NonNull final Date date) {
         final Date dateFrom = extractMinTimeOfDate(date);
-        final Date dateTo = extractMaxDate(date);
+        final Date dateTo = extractMaxTimeOfDate(date);
         return mDatabase.stepCountDao().loadStepCounts(dateFrom, dateTo);
     }
 
@@ -129,8 +130,11 @@ public final class DataRepository {
     @NonNull
     public LiveData<Integer> getRemainingStepCountsByDate(@NonNull final Date date) {
         final Date dateFrom = extractMinTimeOfDate(date);
-        final Date dateTo = extractMaxDate(date);
-        return mDatabase.stepCountDao().loadRemainingStepCount(dateFrom, dateTo);
+        final Date dateTo = extractMaxTimeOfDate(date);
+        return Transformations.map(
+                mDatabase.stepCountDao().loadRemainingStepCount(dateFrom, dateTo),
+                data -> data > 0 ? data : 0
+        );
     }
 
     /**
@@ -168,7 +172,7 @@ public final class DataRepository {
     @NonNull
     public LiveData<Map<String, Integer>> getAppUsageTimeByDate(@NonNull final Date date) {
         final Date dateFrom = extractMinTimeOfDate(date);
-        final Date dateTo = extractMaxDate(date);
+        final Date dateTo = extractMaxTimeOfDate(date);
         return Transformations.map(
                 mDatabase.appUsageDao().loadAppUsageTime(dateFrom, dateTo),
                 appUsageList -> {
@@ -199,7 +203,7 @@ public final class DataRepository {
     @NonNull
     public LiveData<Map<String, Double>> getAppUsagePercentByDate(@NonNull final Date date) {
         final Date dateFrom = extractMinTimeOfDate(date);
-        final Date dateTo = extractMaxDate(date);
+        final Date dateTo = extractMaxTimeOfDate(date);
         return Transformations.map(
                 mDatabase.appUsageDao().loadAppUsagePercent(dateFrom, dateTo),
                 appUsageList -> {

@@ -25,6 +25,8 @@ public class TimeCreditEntity implements TimeCredit {
     private Date mTimestamp;
     @ColumnInfo(name = "time_in_minutes")
     private int mTimeInMinutes;
+    @ColumnInfo(name = "steps")
+    private int mStepCount;
 
     public long getId() {
         return mId;
@@ -48,5 +50,13 @@ public class TimeCreditEntity implements TimeCredit {
 
     public void setTimeInMinutes(int timeInMinutes) {
         this.mTimeInMinutes = timeInMinutes;
+    }
+
+    public int getStepCount() {
+        return mStepCount;
+    }
+
+    public void setStepCount(int stepCount) {
+        this.mStepCount = stepCount;
     }
 }

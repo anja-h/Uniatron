@@ -29,4 +29,11 @@ public interface TimeCredit {
      * @return The time in minutes.
      */
     int getTimeInMinutes();
+
+    /**
+     * Get the step count.
+     *
+     * @return The step count.
+     */
+    int getStepCount();
 }

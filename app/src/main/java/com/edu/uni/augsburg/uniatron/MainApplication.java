@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
 import com.edu.uni.augsburg.uniatron.domain.DataRepository;
-import com.edu.uni.augsburg.uniatron.model.TimeCreditItem;
 
 /**
  * The application context for this app.
@@ -28,7 +27,7 @@ public class MainApplication extends Application {
         mDataRepository.addAppUsage("Spotify", 92);
         mDataRepository.addStepCount(11);
         mDataRepository.addStepCount(1734);
-        mDataRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
+        //mDataRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
     }
 
     /**

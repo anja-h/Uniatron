@@ -45,7 +45,7 @@ public final class DateUtils {
      * @return The date.
      */
     @NonNull
-    public static Date extractMaxDate(@NonNull final Date date) {
+    public static Date extractMaxTimeOfDate(@NonNull final Date date) {
         final Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, HOUR_OF_DAY_MAX);

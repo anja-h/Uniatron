@@ -6,6 +6,7 @@ import android.support.test.InstrumentationRegistry;
 
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
 import com.edu.uni.augsburg.uniatron.domain.model.StepCountEntity;
+import com.edu.uni.augsburg.uniatron.domain.model.TimeCreditEntity;
 
 import org.junit.After;
 import org.junit.Before;
@@ -13,23 +14,26 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMaxDate;
+import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMaxTimeOfDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMinTimeOfDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getLiveDataValue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class StepCountDaoTest {
     private AppDatabase mDb;
     private StepCountDao mDao;
+    private TimeCreditDao mDaoCredit;
 
     @Before
     public void setUp() {
         final Context context = InstrumentationRegistry.getTargetContext();
         mDb = AppDatabase.buildInMemory(context);
         mDao = mDb.stepCountDao();
+        mDaoCredit = mDb.timeCreditDao();
     }
 
     @After
@@ -56,11 +60,64 @@ public class StepCountDaoTest {
         mDao.add(create(count, date));
 
         final LiveData<Integer> data = mDao
-                .loadStepCounts(extractMinTimeOfDate(date), extractMaxDate(date));
+                .loadStepCounts(extractMinTimeOfDate(date), extractMaxTimeOfDate(date));
 
         final Integer liveDataValue = getLiveDataValue(data);
         assertThat(liveDataValue, is(notNullValue()));
         assertThat(liveDataValue, is(count * 3));
+    }
+
+    @Test
+    public void loadRemainingStepCountsNegative() throws Exception {
+        final int count = 10;
+        final Date date = getDate(1, 1, 2018);
+
+        TimeCreditEntity entry = new TimeCreditEntity();
+        entry.setStepCount(count);
+        entry.setTimestamp(date);
+        entry.setTimeInMinutes(2);
+        mDaoCredit.add(entry);
+
+        final LiveData<Integer> data = mDao
+                .loadRemainingStepCount(extractMinTimeOfDate(date), extractMaxTimeOfDate(date));
+
+        final Integer liveDataValue = getLiveDataValue(data);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(-count));
+    }
+
+    @Test
+    public void loadRemainingStepCountsZero() throws Exception {
+        final int count = 10;
+        final Date date = getDate(1, 1, 2018);
+        mDao.add(create(count, date));
+
+        TimeCreditEntity entry = new TimeCreditEntity();
+        entry.setStepCount(count);
+        entry.setTimestamp(date);
+        entry.setTimeInMinutes(2);
+        mDaoCredit.add(entry);
+
+        final LiveData<Integer> data = mDao
+                .loadRemainingStepCount(extractMinTimeOfDate(date), extractMaxTimeOfDate(date));
+
+        final Integer liveDataValue = getLiveDataValue(data);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(0));
+    }
+
+    @Test
+    public void loadRemainingStepCountsPositive() throws Exception {
+        final int count = 10;
+        final Date date = getDate(1, 1, 2018);
+        mDao.add(create(count, date));
+
+        final LiveData<Integer> data = mDao
+                .loadRemainingStepCount(extractMinTimeOfDate(date), extractMaxTimeOfDate(date));
+
+        final Integer liveDataValue = getLiveDataValue(data);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(count));
     }
 
     private StepCountEntity create(int count, Date date) {

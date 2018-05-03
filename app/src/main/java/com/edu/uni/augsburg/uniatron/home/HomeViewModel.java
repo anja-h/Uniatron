@@ -73,7 +73,7 @@ public class HomeViewModel extends AndroidViewModel {
      * @return The step counts.
      */
     public LiveData<Integer> getStepCountsToday() {
-        return mObservableStepCount;
+        return Transformations.map(mObservableStepCount, data -> data != null ? data : 0);
     }
 
     /**
@@ -82,7 +82,7 @@ public class HomeViewModel extends AndroidViewModel {
      * @return The remaining step count.
      */
     public LiveData<Integer> getRemainingStepCountToday() {
-        return mObservableRemainingStepCount;
+        return Transformations.map(mObservableRemainingStepCount, data -> data != null ? data : 0);
     }
 
     private Map<String, Double> extractValues(final Map<String, Double> data, final int maxCount) {

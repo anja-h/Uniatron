@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.edu.uni.augsburg.uniatron.R;
+import com.edu.uni.augsburg.uniatron.home.dialogs.ShopTimeCreditDialogFragment;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -66,7 +68,7 @@ public class HomeFragment extends Fragment {
 
         homeViewModel.getAppUsageOfTop3Apps().observe(this, item -> {
             pieDataSet.clear();
-            if (item != null) {
+            if (!item.isEmpty()) {
                 float value = 0;
                 for (Map.Entry<String, Double> entry : item.entrySet()) {
                     value += entry.getValue().floatValue();
@@ -84,29 +86,23 @@ public class HomeFragment extends Fragment {
         });
 
         homeViewModel.getStepCountsToday().observe(this, stepCount -> {
-            if (stepCount == null) {
-                mAppUsagePieChart.setCenterText(String.valueOf(0));
-            } else {
-                mAppUsagePieChart.setCenterText(String.valueOf(stepCount));
-            }
+            mAppUsagePieChart.setCenterText(String.valueOf(stepCount));
         });
 
         homeViewModel.getRemainingStepCountToday().observe(this, stepCount -> {
-            if (stepCount == null) {
-                mStepButton.setText(String.valueOf(0));
-            } else {
-                mStepButton.setText(String.valueOf(stepCount));
-            }
+            mStepButton.setText(String.valueOf(stepCount));
         });
     }
 
     /**
      * Is called when the step button is clicked.
-     *
-     * @param view The button.
      */
     @OnClick(R.id.stepButton)
-    public void onStepButtonClick(View view) {
-        mStepButton.setText("Test");
+    public void onStepButtonClick() {
+        final FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null) {
+            final ShopTimeCreditDialogFragment dialogFragment = new ShopTimeCreditDialogFragment();
+            dialogFragment.show(fragmentManager, ShopTimeCreditDialogFragment.NAME);
+        }
     }
 }
