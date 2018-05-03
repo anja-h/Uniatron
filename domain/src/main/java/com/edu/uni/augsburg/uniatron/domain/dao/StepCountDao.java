@@ -30,7 +30,7 @@ public interface StepCountDao {
     void add(StepCountEntity stepCount);
 
     /**
-     * Load the step count for a specified date.
+     * Load the step count for a specified date range.
      *
      * @param dateFrom The date to start searching.
      * @param dateTo The date to end searching.
@@ -39,4 +39,16 @@ public interface StepCountDao {
     @Query("SELECT SUM(step_count) FROM StepCountEntity "
             + "WHERE timestamp BETWEEN :dateFrom AND :dateTo")
     LiveData<Integer> loadStepCounts(Date dateFrom, Date dateTo);
+
+    /**
+     * Load the remaining step count for a specified date range.
+     *
+     * @param dateFrom The date to start searching.
+     * @param dateTo The date to end searching.
+     * @return The step count.
+     */
+    @Query("SELECT SUM(step_count) - (SELECT SUM(time_in_minutes) * 60 FROM TimeCreditEntity "
+            + "WHERE timestamp BETWEEN :dateFrom AND :dateTo) FROM StepCountEntity "
+            + "WHERE timestamp BETWEEN :dateFrom AND :dateTo")
+    LiveData<Integer> loadRemainingStepCount(Date dateFrom, Date dateTo);
 }

@@ -111,6 +111,29 @@ public final class DataRepository {
     }
 
     /**
+     * Get the remaining step count for today.
+     *
+     * @return The amount of steps.
+     */
+    @NonNull
+    public LiveData<Integer> getRemainingStepCountsToday() {
+        return getRemainingStepCountsByDate(new Date());
+    }
+
+    /**
+     * Get the remaining step count by date.
+     *
+     * @param date The date to get the remaining steps from.
+     * @return The amount of steps.
+     */
+    @NonNull
+    public LiveData<Integer> getRemainingStepCountsByDate(@NonNull final Date date) {
+        final Date dateFrom = extractMinTimeOfDate(date);
+        final Date dateTo = extractMaxDate(date);
+        return mDatabase.stepCountDao().loadRemainingStepCount(dateFrom, dateTo);
+    }
+
+    /**
      * Add the usage time of an app.
      *
      * @param appName            The name of the app which was used.
