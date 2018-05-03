@@ -1,11 +1,14 @@
 package com.edu.uni.augsburg.uniatron;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.edu.uni.augsburg.uniatron.stepcounter.StepCountService;
 
 /**
  * The main activity is the entry point of the app.
@@ -44,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        startService(new Intent(getBaseContext(), StepCountService.class));
+
     }
 
 }
