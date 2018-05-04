@@ -25,6 +25,7 @@ import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMinTime
  * @author Fabio Hellmann
  */
 public final class DataRepository {
+    private static final int INITIAL_DAY_BONUS_TIME_IN_MINUTES = 60;
     private final AppDatabase mDatabase;
 
     /**
@@ -34,6 +35,20 @@ public final class DataRepository {
      */
     public DataRepository(@NonNull final AppDatabase database) {
         mDatabase = database;
+    }
+
+    /**
+     * Add a new time credit once a day started.
+     *
+     * @return The time credit.
+     */
+    public TimeCredit addTimeCreditDayStart() {
+        final TimeCreditEntity timeCreditEntity = new TimeCreditEntity();
+        timeCreditEntity.setTimeInMinutes(INITIAL_DAY_BONUS_TIME_IN_MINUTES);
+        timeCreditEntity.setStepCount(0);
+        timeCreditEntity.setTimestamp(extractMinTimeOfDate(new Date()));
+        mDatabase.timeCreditDao().add(timeCreditEntity);
+        return timeCreditEntity;
     }
 
     /**
@@ -213,5 +228,51 @@ public final class DataRepository {
                     }
                     return map;
                 });
+    }
+
+    /**
+     * Get the usage time of all apps as sum for today.
+     *
+     * @return The usage time of all apps.
+     */
+    @NonNull
+    public LiveData<Integer> getUsageTimeToday() {
+        return getUsageTimeByDate(new Date());
+    }
+
+    /**
+     * Get the usage time of all apps as sum.
+     *
+     * @param date The date to get this data from.
+     * @return The usage time of all apps.
+     */
+    @NonNull
+    public LiveData<Integer> getUsageTimeByDate(@NonNull final Date date) {
+        final Date dateFrom = extractMinTimeOfDate(date);
+        final Date dateTo = extractMaxTimeOfDate(date);
+        return mDatabase.appUsageDao().loadAppUsageTimeSum(dateFrom, dateTo);
+    }
+
+    /**
+     * Get the remaining usage time for today.
+     *
+     * @return The remaining usage time.
+     */
+    @NonNull
+    public LiveData<Integer> getRemainingUsageTimeToday() {
+        return getRemainingUsageTimeByDate(new Date());
+    }
+
+    /**
+     * Get the remaining usage time as sum.
+     *
+     * @param date The date to get this data from.
+     * @return The remaining usage time.
+     */
+    @NonNull
+    private LiveData<Integer> getRemainingUsageTimeByDate(@NonNull final Date date) {
+        final Date dateFrom = extractMinTimeOfDate(date);
+        final Date dateTo = extractMaxTimeOfDate(date);
+        return mDatabase.appUsageDao().loadRemainingAppUsageTime(dateFrom, dateTo);
     }
 }

@@ -20,18 +20,18 @@ public class MainApplication extends Application {
 
         mDataRepository = new DataRepository(AppDatabase.buildInMemory(this));
 
-        mDataRepository.addAppUsage("WhatsApp", 100);
+        mDataRepository.addAppUsage("WhatsApp", 143);
         mDataRepository.addAppUsage("Facebook", 231);
-        mDataRepository.addAppUsage("Timely", 18);
-        mDataRepository.addAppUsage("Youtube", 298);
-        mDataRepository.addAppUsage("Gmail", 838);
-        mDataRepository.addAppUsage("Spotify", 92);
+        mDataRepository.addAppUsage("Youtube", 785);
+        mDataRepository.addAppUsage("Gmail", 456);
+        mDataRepository.addAppUsage("Spotify", 245);
+        mDataRepository.addAppUsage("Timely", 19);
         mDataRepository.addStepCount(11);
         mDataRepository.addStepCount(1734);
         mDataRepository.addStepCount(3847);
         mDataRepository.addStepCount(34);
         mDataRepository.addStepCount(784);
-        mDataRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
+        mDataRepository.addTimeCreditDayStart();
     }
 
     /**

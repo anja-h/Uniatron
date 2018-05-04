@@ -61,4 +61,27 @@ public interface AppUsageDao {
             + "GROUP BY app_name "
             + "ORDER BY SUM(usage_time_in_seconds) DESC")
     LiveData<List<AppUsageEntity>> loadAppUsagePercent(Date dateFrom, Date dateTo);
+
+    /**
+     * Load the app usage time of each app summed by the app name.
+     *
+     * @param dateFrom The date to start searching.
+     * @param dateTo The date to end searching.
+     * @return The app usage time by app.
+     */
+    @Query("SELECT SUM(usage_time_in_seconds) FROM AppUsageEntity "
+            + "WHERE timestamp BETWEEN :dateFrom AND :dateTo")
+    LiveData<Integer> loadAppUsageTimeSum(Date dateFrom, Date dateTo);
+
+    /**
+     * Load the remaining app usage time.
+     *
+     * @param dateFrom The date to start searching.
+     * @param dateTo The date to end searching.
+     * @return The remaining app usage time.
+     */
+    @Query("SELECT (SELECT SUM(time_in_minutes * 60) FROM TimeCreditEntity "
+            + "WHERE timestamp BETWEEN :dateFrom AND :dateTo) - SUM(usage_time_in_seconds) "
+            + "FROM AppUsageEntity WHERE timestamp BETWEEN :dateFrom AND :dateTo")
+    LiveData<Integer> loadRemainingAppUsageTime(Date dateFrom, Date dateTo);
 }

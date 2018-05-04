@@ -9,6 +9,6 @@
     <string name="dialog_time_credit_error_steps_missing">You have no credits available. Just go for a walk and get your credit soon!</string>
     <string name="dialog_time_credit_shop_title">Time Credit Shop</string>
     <string name="home_chart_no_data">Have you already used some apps today?</string>
-    <string name="pie_chart_center_text">%d steps</string>
+    <string name="pie_chart_center_text">%1$d:%2$02d minute(s)\nremaining</string>
     <string name="trade">Trade</string>
 </resources>

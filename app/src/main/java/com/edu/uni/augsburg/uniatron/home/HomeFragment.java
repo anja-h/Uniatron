@@ -22,6 +22,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -39,6 +40,9 @@ public class HomeFragment extends Fragment {
     PieChart mAppUsagePieChart;
     @BindView(R.id.stepButton)
     Button mStepButton;
+
+    private int totalStepCount = 0;
+    private int remainingStepCount = 0;
 
     @Nullable
     @Override
@@ -62,6 +66,7 @@ public class HomeFragment extends Fragment {
         mAppUsagePieChart.setRotationEnabled(false);
         mAppUsagePieChart.setHardwareAccelerationEnabled(true);
         mAppUsagePieChart.getLegend().setEnabled(false);
+        mAppUsagePieChart.setHighlightPerTapEnabled(false);
         mAppUsagePieChart.setNoDataText(getString(R.string.home_chart_no_data));
         mAppUsagePieChart.setCenterTextColor(getResources().getColor(R.color.primaryTextColor));
         mAppUsagePieChart.setCenterTextSize(getResources().getDimension(R.dimen.chart_title_text_size));
@@ -94,8 +99,11 @@ public class HomeFragment extends Fragment {
             mAppUsagePieChart.notifyDataSetChanged();
         });
 
-        homeViewModel.getStepCountsToday().observe(this, stepCount -> {
-            mAppUsagePieChart.setCenterText(getString(R.string.pie_chart_center_text, stepCount));
+        homeViewModel.getRemainingAppUsageTime().observe(this, time -> {
+            mAppUsagePieChart.setCenterText(
+                    getString(R.string.pie_chart_center_text, time / 60, time % 60)
+            );
+            mAppUsagePieChart.invalidate();
         });
 
         homeViewModel.getRemainingStepCountToday().observe(this, stepCount -> {
@@ -113,5 +121,11 @@ public class HomeFragment extends Fragment {
             final ShopTimeCreditDialogFragment dialogFragment = new ShopTimeCreditDialogFragment();
             dialogFragment.show(fragmentManager, ShopTimeCreditDialogFragment.NAME);
         }
+    }
+
+    private void updateStepButtonText() {
+        final String text = String.valueOf(remainingStepCount) + "/"
+                + String.valueOf(totalStepCount);
+        mStepButton.setText(text);
     }
 }

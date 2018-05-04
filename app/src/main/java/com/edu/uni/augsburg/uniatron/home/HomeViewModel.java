@@ -24,8 +24,8 @@ import java.util.Map;
 public class HomeViewModel extends AndroidViewModel {
     private static final int MAX_COUNT = 3;
     private final MediatorLiveData<Map<String, Double>> mObservableAppUsages;
-    private final MediatorLiveData<Integer> mObservableStepCount;
     private final MediatorLiveData<Integer> mObservableRemainingStepCount;
+    private final MediatorLiveData<Integer> mObservableRemainingAppUsageTime;
 
     /**
      * Ctr.
@@ -44,18 +44,19 @@ public class HomeViewModel extends AndroidViewModel {
                 repository.getAppUsagePercentToday();
         mObservableAppUsages.addSource(appUsagePercentToday, mObservableAppUsages::setValue);
 
-        mObservableStepCount = new MediatorLiveData<>();
-        mObservableStepCount.setValue(null);
-
-        final LiveData<Integer> stepCountsToday = repository.getStepCountsToday();
-        mObservableStepCount.addSource(stepCountsToday, mObservableStepCount::setValue);
-
         mObservableRemainingStepCount = new MediatorLiveData<>();
         mObservableRemainingStepCount.setValue(null);
 
         final LiveData<Integer> remainingStepCountsToday = repository.getRemainingStepCountsToday();
         mObservableRemainingStepCount.addSource(remainingStepCountsToday,
                 mObservableRemainingStepCount::setValue);
+
+        mObservableRemainingAppUsageTime = new MediatorLiveData<>();
+        mObservableRemainingAppUsageTime.setValue(null);
+
+        final LiveData<Integer> remainingUsageTimeToday = repository.getRemainingUsageTimeToday();
+        mObservableRemainingAppUsageTime.addSource(remainingUsageTimeToday,
+                mObservableRemainingAppUsageTime::setValue);
     }
 
     /**
@@ -69,23 +70,25 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     /**
-     * Get the step counts for today.
-     *
-     * @return The step counts.
-     */
-    @NonNull
-    public LiveData<Integer> getStepCountsToday() {
-        return Transformations.map(mObservableStepCount, data -> data != null ? data : 0);
-    }
-
-    /**
      * Get the remaining step count for today.
      *
      * @return The remaining step count.
      */
     @NonNull
     public LiveData<Integer> getRemainingStepCountToday() {
-        return Transformations.map(mObservableRemainingStepCount, data -> data != null ? data : 0);
+        return Transformations.map(mObservableRemainingStepCount,
+                data -> data != null && data > 0? data : 0);
+    }
+
+    /**
+     * Get the remaining app usage time for today.
+     *
+     * @return The remaining app usage time.
+     */
+    @NonNull
+    public LiveData<Integer> getRemainingAppUsageTime() {
+        return Transformations.map(mObservableRemainingAppUsageTime,
+                data -> data != null && data > 0 ? data : 0);
     }
 
     @NonNull

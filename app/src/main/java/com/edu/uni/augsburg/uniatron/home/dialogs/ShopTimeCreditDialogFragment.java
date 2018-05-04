@@ -79,9 +79,11 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
                 mAdapter.setStepCount(stepCount);
                 mAdapter.notifyDataSetChanged();
                 mRecyclerView.setVisibility(View.VISIBLE);
+                mTradeButton.setVisibility(View.VISIBLE);
                 mTextViewError.setVisibility(View.GONE);
             } else {
                 mRecyclerView.setVisibility(View.GONE);
+                mTradeButton.setVisibility(View.GONE);
                 mTextViewError.setVisibility(View.VISIBLE);
             }
         });
