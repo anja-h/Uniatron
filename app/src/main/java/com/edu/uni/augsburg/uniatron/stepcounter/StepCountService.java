@@ -1,6 +1,5 @@
 package com.edu.uni.augsburg.uniatron.stepcounter;
 
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -9,6 +8,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
+
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
 import com.edu.uni.augsburg.uniatron.domain.DataRepository;
 
@@ -19,10 +20,11 @@ import com.edu.uni.augsburg.uniatron.domain.DataRepository;
  */
 public class StepCountService extends Service implements SensorEventListener {
 
-    private static NotificationManager notificationManager;
-
     private SensorManager sensorManager;
     private Sensor stepDetectorSensor;
+
+    private static int commitSize = 10;
+    private int currentSteps;
 
     @Nullable
     @Override
@@ -30,11 +32,18 @@ public class StepCountService extends Service implements SensorEventListener {
         return null;
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-    // TODO start the service when the device boots. stop it when the device shuts down
-    // -> listen to bootcompleted broadcast
+        currentSteps = 0;
+        Toast.makeText(this, "StepCountService has been created", Toast.LENGTH_LONG).show();
+    }
+
     @Override
     public int onStartCommand(Intent intent,   int flags, int startId) {
+        Toast.makeText(this, "Listening to StepDetectorSensor", Toast.LENGTH_LONG).show();
+
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         sensorManager.registerListener(this, stepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
@@ -47,15 +56,17 @@ public class StepCountService extends Service implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         // inefficient way
         if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            Toast.makeText(this, "sensor input received", Toast.LENGTH_LONG).show();
             int detectedSteps = (int) event.values[0];
+            currentSteps += detectedSteps;
 
-            // we currently commit every step to the database
-            // the database will create the sum of daily steps
-            // if this creates an energy consumption problem, we will do it in batches
-
-            DataRepository data = new DataRepository(AppDatabase.buildInMemory(this));
-            data.addStepCount(detectedSteps);
+            if (currentSteps > commitSize) {
+                DataRepository data = new DataRepository(AppDatabase.buildInMemory(this));
+                data.addStepCount(currentSteps);
+                Toast.makeText(this, currentSteps + " steps have been commited", Toast.LENGTH_LONG).show();
+                currentSteps = 0;
             }
+        }
 
         // possibly implement an energy efficient way later on
         //if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {}
@@ -68,7 +79,10 @@ public class StepCountService extends Service implements SensorEventListener {
 
     @Override
     public void onDestroy() {
-        // internal cleanup
+        // commit the steps that are due
+        DataRepository data = new DataRepository(AppDatabase.buildInMemory(this));
+        data.addStepCount(currentSteps);
+        currentSteps = 0;
         super.onDestroy();
     }
 
