@@ -48,10 +48,13 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        // the service is started when the app is first opened after installation
-        // reboots will automatically start the service via BroadcastReceiverOnBootComplete class
+        // start the service when the app is first opened after installation
+        // rebooting will automatically start the service via BroadcastReceiverOnStateChanged class
+        // force closing via OS will automatically start the service because it's sticky
         startService(new Intent(getBaseContext(), StepCountService.class));
 
-    }
+        }
 
 }
+
+
