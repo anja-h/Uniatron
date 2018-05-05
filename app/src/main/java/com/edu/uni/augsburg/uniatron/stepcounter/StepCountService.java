@@ -9,7 +9,6 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 //import com.edu.uni.augsburg.uniatron.MainApplication;
 
@@ -23,8 +22,7 @@ public class StepCountService extends Service implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor stepDetectorSensor;
 
-
-    private static int commitSize = 10;
+    private static final int COMMIT_SIZE = 10;
     private int currentSteps;
 
     @Nullable
@@ -46,7 +44,6 @@ public class StepCountService extends Service implements SensorEventListener {
         stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         sensorManager.registerListener(this, stepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
 
-        Toast.makeText(this, "StepCountService has been started", Toast.LENGTH_SHORT).show();
         // this causes the OS to restart the service if it has been force stopped
         return START_STICKY;
     }
@@ -58,11 +55,11 @@ public class StepCountService extends Service implements SensorEventListener {
             int detectedSteps = (int) event.values[0];
             currentSteps += detectedSteps;
 
-            if (currentSteps >= commitSize) {
-                // subtract steps here and always commit exactly <commitSize> steps to prevent async issues
+            if (currentSteps >= COMMIT_SIZE) {
+                // subtract steps here and always commit exactly <COMMIT_SIZE> steps to prevent async issues
                 // async could happen when the sensor delivers new data before the async task is completed
-                currentSteps -= commitSize;
-                commitSteps(commitSize);
+                currentSteps -= COMMIT_SIZE;
+                commitSteps(COMMIT_SIZE);
             }
         }
     }
@@ -84,7 +81,7 @@ public class StepCountService extends Service implements SensorEventListener {
     }
 
     /**
-     * The function to commit exactly <commitSize> to the DataRepository
+     * The function to commit exactly <COMMIT_SIZE> to the DataRepository
      */
     private void commitSteps(int numberOfSteps) {
         //execute this on a separate thread as it may some time
@@ -92,6 +89,7 @@ public class StepCountService extends Service implements SensorEventListener {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
+                // TODO uncomment after merge with master
                 //MainApplication.getRepository().addStepCount(numberOfSteps);
             }
         });

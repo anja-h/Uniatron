@@ -1,6 +1,7 @@
 package com.edu.uni.augsburg.uniatron;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -18,6 +19,10 @@ import com.edu.uni.augsburg.uniatron.stepcounter.StepCountService;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
+
+    private static final String PREFS_NAME = "checkfirstlaunch";
+    private static final String PREF_VERSION_CODE_KEY = "version_code";
+    private static final int DOESNT_EXIST = -1;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -48,12 +53,43 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+
         // start the service when the app is first opened after installation
         // rebooting will automatically start the service via BroadcastReceiverOnStateChanged class
         // force closing via OS will automatically start the service because it's sticky
-        startService(new Intent(getBaseContext(), StepCountService.class));
-
+        checkFirstRun();
         }
+
+
+    private void checkFirstRun() {
+
+        // Get current version code
+        int currentVersionCode = BuildConfig.VERSION_CODE;
+
+        // Get saved version code
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
+
+        // Check for first run or upgrade
+        if (currentVersionCode == savedVersionCode) {
+
+            // This is just a normal run
+            return;
+
+        } else if (savedVersionCode == DOESNT_EXIST) {
+
+            // this is a new install (or the user cleared the shared preferences)
+            startService(new Intent(getBaseContext(), StepCountService.class));
+
+        } else if (currentVersionCode > savedVersionCode) {
+
+            // this is an upgrade
+            startService(new Intent(getBaseContext(), StepCountService.class));
+        }
+
+        // Update the shared preferences with the current version code
+        prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
+    }
 
 }
 

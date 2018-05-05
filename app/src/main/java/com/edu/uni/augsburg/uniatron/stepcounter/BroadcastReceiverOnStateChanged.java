@@ -15,22 +15,22 @@ public class BroadcastReceiverOnStateChanged extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         String action = intent.getAction();
-        // on device restart, app install, app update
-        if (action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)
-                || action.equalsIgnoreCase(Intent.ACTION_PACKAGE_REPLACED)
-                || action.equalsIgnoreCase(Intent.ACTION_PACKAGE_ADDED)) {
-
+        // on device restart, restart the service
+        if (action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
                 startService(context);
         }
     }
 
     private void startService(Context context) {
+
+        Intent i = new Intent(context, StepCountService.class);
+
         // fixes crash on post Android O devices; services cannot be started in background!
         // IllegalStateException: Not allowed to start service Intent { StepCountService }: app is in background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(new Intent(context, StepCountService.class));
+            context.startForegroundService(i);
         } else {
-            context.startService(new Intent(context, StepCountService.class));
+            context.startService(i);
         }
     }
 }
