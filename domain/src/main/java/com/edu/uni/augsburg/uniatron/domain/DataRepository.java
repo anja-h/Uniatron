@@ -10,7 +10,7 @@ import com.edu.uni.augsburg.uniatron.domain.model.TimeCreditEntity;
 import com.edu.uni.augsburg.uniatron.model.AppUsage;
 import com.edu.uni.augsburg.uniatron.model.StepCount;
 import com.edu.uni.augsburg.uniatron.model.TimeCredit;
-import com.edu.uni.augsburg.uniatron.model.TimeCreditItem;
+import com.edu.uni.augsburg.uniatron.model.TimeCredits;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -25,7 +25,6 @@ import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMinTime
  * @author Fabio Hellmann
  */
 public final class DataRepository {
-    private static final int INITIAL_DAY_BONUS_TIME_IN_MINUTES = 60;
     private final AppDatabase mDatabase;
 
     /**
@@ -38,29 +37,15 @@ public final class DataRepository {
     }
 
     /**
-     * Add a new time credit once a day started.
-     *
-     * @return The time credit.
-     */
-    public TimeCredit addTimeCreditDayStart() {
-        final TimeCreditEntity timeCreditEntity = new TimeCreditEntity();
-        timeCreditEntity.setTimeInMinutes(INITIAL_DAY_BONUS_TIME_IN_MINUTES);
-        timeCreditEntity.setStepCount(0);
-        timeCreditEntity.setTimestamp(extractMinTimeOfDate(new Date()));
-        mDatabase.timeCreditDao().add(timeCreditEntity);
-        return timeCreditEntity;
-    }
-
-    /**
      * Add a new time credit.
      *
-     * @param timeCreditItem The time credit will be generated out of this.
+     * @param timeCredits The time credit will be generated out of this.
      * @return The time credit.
      */
-    public TimeCredit addTimeCredit(@NonNull final TimeCreditItem timeCreditItem) {
+    public TimeCredit addTimeCredit(@NonNull final TimeCredits timeCredits) {
         final TimeCreditEntity timeCreditEntity = new TimeCreditEntity();
-        timeCreditEntity.setTimeInMinutes(timeCreditItem.getTimeInMinutes());
-        timeCreditEntity.setStepCount(timeCreditItem.getStepCount());
+        timeCreditEntity.setTimeInMinutes(timeCredits.getTimeInMinutes());
+        timeCreditEntity.setStepCount(timeCredits.getStepCount());
         timeCreditEntity.setTimestamp(new Date());
         mDatabase.timeCreditDao().add(timeCreditEntity);
         return timeCreditEntity;

@@ -13,7 +13,7 @@ import com.edu.uni.augsburg.uniatron.domain.util.TestUtils;
 import com.edu.uni.augsburg.uniatron.model.AppUsage;
 import com.edu.uni.augsburg.uniatron.model.StepCount;
 import com.edu.uni.augsburg.uniatron.model.TimeCredit;
-import com.edu.uni.augsburg.uniatron.model.TimeCreditItem;
+import com.edu.uni.augsburg.uniatron.model.TimeCredits;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -65,7 +65,7 @@ public class DataRepositoryTest {
 
     @Test
     public void addTimeCredit() {
-        final TimeCredit timeCredit = mRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
+        final TimeCredit timeCredit = mRepository.addTimeCredit(TimeCredits.CREDIT_1000);
         assertThat(timeCredit, is(notNullValue()));
     }
 
@@ -73,7 +73,7 @@ public class DataRepositoryTest {
     public void addTimeCreditFailed() {
         Mockito.doThrow(Exception.class).when(timeCreditDao).add(any());
 
-        mRepository.addTimeCredit(TimeCreditItem.CREDIT_1000);
+        mRepository.addTimeCredit(TimeCredits.CREDIT_1000);
         assertFalse("Should has thrown an exception!", true);
     }
 

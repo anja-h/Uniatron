@@ -8,10 +8,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.edu.uni.augsburg.uniatron.domain.converter.DateConverter;
+import com.edu.uni.augsburg.uniatron.domain.converter.EmotionConverter;
 import com.edu.uni.augsburg.uniatron.domain.dao.AppUsageDao;
+import com.edu.uni.augsburg.uniatron.domain.dao.EmotionDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.StepCountDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.TimeCreditDao;
 import com.edu.uni.augsburg.uniatron.domain.model.AppUsageEntity;
+import com.edu.uni.augsburg.uniatron.domain.model.EmotionEntity;
 import com.edu.uni.augsburg.uniatron.domain.model.StepCountEntity;
 import com.edu.uni.augsburg.uniatron.domain.model.TimeCreditEntity;
 
@@ -20,8 +23,13 @@ import com.edu.uni.augsburg.uniatron.domain.model.TimeCreditEntity;
  *
  * @author Fabio Hellmann
  */
-@Database(version = 1, entities = {StepCountEntity.class, AppUsageEntity.class, TimeCreditEntity.class})
-@TypeConverters(DateConverter.class)
+@Database(version = 1, entities = {
+        StepCountEntity.class,
+        AppUsageEntity.class,
+        TimeCreditEntity.class,
+        EmotionEntity.class
+})
+@TypeConverters({DateConverter.class, EmotionConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     /**
@@ -44,6 +52,13 @@ public abstract class AppDatabase extends RoomDatabase {
      * @return the time credit dao.
      */
     public abstract TimeCreditDao timeCreditDao();
+
+    /**
+     * Get the emotion dao.
+     *
+     * @return the emotion dao.
+     */
+    public abstract EmotionDao emotionDao();
 
     /**
      * Create the app database.

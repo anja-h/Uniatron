@@ -19,7 +19,7 @@ import com.annimon.stream.Stream;
 import com.edu.uni.augsburg.uniatron.MainApplication;
 import com.edu.uni.augsburg.uniatron.R;
 import com.edu.uni.augsburg.uniatron.home.HomeViewModel;
-import com.edu.uni.augsburg.uniatron.model.TimeCreditItem;
+import com.edu.uni.augsburg.uniatron.model.TimeCredits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,7 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
     Button mTradeButton;
 
     private TimeCreditListAdapter mAdapter;
+    private OnBuyButtonClickedListener mListener;
 
     @Nullable
     @Override
@@ -75,7 +76,7 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
 
         final HomeViewModel model = ViewModelProviders.of(this).get(HomeViewModel.class);
         model.getRemainingStepCountToday().observe(this, stepCount -> {
-            if (TimeCreditItem.CREDIT_1000.isUsable(stepCount)) {
+            if (TimeCredits.CREDIT_1000.isUsable(stepCount)) {
                 mAdapter.setStepCount(stepCount);
                 mAdapter.notifyDataSetChanged();
                 mRecyclerView.setVisibility(View.VISIBLE);
@@ -106,7 +107,31 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
             final MainApplication context = (MainApplication) getContext().getApplicationContext();
             context.getRepository().addTimeCredit(mAdapter.getSelection());
             dismiss();
+            if (mListener != null) {
+                mListener.onClicked();
+            }
         }
+    }
+
+    /**
+     * Register a listener which will be called after the buy button was pressed.
+     *
+     * @param listener The listener.
+     */
+    public void setOnBuyButtonClickedListener(OnBuyButtonClickedListener listener) {
+        this.mListener = listener;
+    }
+
+    /**
+     * The buy button event listener interface.
+     *
+     * @author Fabio Hellmann
+     */
+    public interface OnBuyButtonClickedListener {
+        /**
+         * This method is called after the button was clicked.
+         */
+        void onClicked();
     }
 
     final class TimeCreditListAdapter extends
@@ -127,21 +152,21 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            final TimeCreditItem timeCreditItem = Stream.of(TimeCreditItem.values())
-                    .sortBy(TimeCreditItem::getStepCount)
+            final TimeCredits timeCredits = Stream.of(TimeCredits.values())
+                    .sortBy(TimeCredits::getStepCount)
                     .collect(Collectors.toList())
                     .get(position);
 
             holder.mTextViewTradeOffer.setText(getString(
                     R.string.dialog_time_credit_item,
-                    timeCreditItem.getStepCount(),
-                    timeCreditItem.getTimeInMinutes())
+                    timeCredits.getStepCount(),
+                    timeCredits.getTimeInMinutes())
             );
         }
 
         @Override
         public int getItemCount() {
-            return (int) Stream.of(TimeCreditItem.values())
+            return (int) Stream.of(TimeCredits.values())
                     .filter(credit -> credit.isUsable(mStepCount))
                     .count();
         }
@@ -150,9 +175,9 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
             this.mStepCount = stepCount;
         }
 
-        TimeCreditItem getSelection() {
-            return Stream.of(TimeCreditItem.values())
-                    .sortBy(TimeCreditItem::getStepCount)
+        TimeCredits getSelection() {
+            return Stream.of(TimeCredits.values())
+                    .sortBy(TimeCredits::getStepCount)
                     .collect(Collectors.toList())
                     .get(mSelectionIndex);
         }
@@ -175,7 +200,7 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
 
             @OnClick(R.id.textViewTradeOffer)
             public void onClick() {
-                if(mSelectionIndex == getAdapterPosition()) {
+                if (mSelectionIndex == getAdapterPosition()) {
                     mTextViewTradeOffer.setBackgroundColor(mDefaultBackgroundColor);
                     mSelectionIndex = -1;
 

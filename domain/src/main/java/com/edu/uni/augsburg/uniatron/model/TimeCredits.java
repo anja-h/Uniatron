@@ -5,26 +5,30 @@ package com.edu.uni.augsburg.uniatron.model;
  *
  * @author Fabio Hellmann
  */
-public enum TimeCreditItem {
+public enum TimeCredits {
     /** The time credit for 10000 steps. */
-    CREDIT_10000(10_000, 30),
+    CREDIT_10000(10_000, 100),
     /** The time credit for 7500 steps. */
-    CREDIT_7500(7_500, 20),
+    CREDIT_7500(7_500, 75),
     /** The time credit for 5000 steps. */
-    CREDIT_5000(5_000, 10),
+    CREDIT_5000(5_000, 50),
     /** The time credit for 4000 steps. */
-    CREDIT_4000(4_000, 8),
+    CREDIT_4000(4_000, 40),
     /** The time credit for 3000 steps. */
-    CREDIT_3000(3_000, 6),
+    CREDIT_3000(3_000, 30),
     /** The time credit for 2000 steps. */
-    CREDIT_2000(2_000, 4),
+    CREDIT_2000(2_000, 20),
     /** The time credit for 1000 steps. */
-    CREDIT_1000(1_000, 2);
+    CREDIT_1000(1_000, 10),
+    /** The time credit for 500 steps. */
+    CREDIT_500(500, 5),
+    /** The time credit for 100 steps. */
+    CREDIT_100(100, 1);
 
     private final int stepCount;
     private final int timeInMinutes;
 
-    TimeCreditItem(int stepCount, int timeInMinutes) {
+    TimeCredits(int stepCount, int timeInMinutes) {
         this.stepCount = stepCount;
         this.timeInMinutes = timeInMinutes;
     }

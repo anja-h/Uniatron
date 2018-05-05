@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.edu.uni.augsburg.uniatron.R;
+import com.edu.uni.augsburg.uniatron.home.dialogs.EmotionDialogFragment;
 import com.edu.uni.augsburg.uniatron.home.dialogs.ShopTimeCreditDialogFragment;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -30,7 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * The {@link HomeFragment} is the main entry point for the user.
+ * The {@link HomeFragment} is the first screen the user will be seen.
  *
  * @author Fabio Hellmann
  */
@@ -40,9 +41,6 @@ public class HomeFragment extends Fragment {
     PieChart mAppUsagePieChart;
     @BindView(R.id.stepButton)
     Button mStepButton;
-
-    private int totalStepCount = 0;
-    private int remainingStepCount = 0;
 
     @Nullable
     @Override
@@ -119,13 +117,11 @@ public class HomeFragment extends Fragment {
         final FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager != null) {
             final ShopTimeCreditDialogFragment dialogFragment = new ShopTimeCreditDialogFragment();
+            dialogFragment.setOnBuyButtonClickedListener(() -> {
+                final EmotionDialogFragment dialog = new EmotionDialogFragment();
+                dialog.show(fragmentManager, EmotionDialogFragment.NAME);
+            });
             dialogFragment.show(fragmentManager, ShopTimeCreditDialogFragment.NAME);
         }
-    }
-
-    private void updateStepButtonText() {
-        final String text = String.valueOf(remainingStepCount) + "/"
-                + String.valueOf(totalStepCount);
-        mStepButton.setText(text);
     }
 }
