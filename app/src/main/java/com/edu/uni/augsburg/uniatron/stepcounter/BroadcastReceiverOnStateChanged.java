@@ -14,7 +14,8 @@ public class BroadcastReceiverOnBootComplete extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
+        String action = intent.getAction();
+        if (action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)  ) {
 
             // fixes crash on post Android O devices; services cannot be started in background!
             // IllegalStateException: Not allowed to start service Intent { StepCountService }: app is in background
