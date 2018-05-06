@@ -21,7 +21,6 @@ public class StepCountService extends Service implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor stepDetectorSensor;
-
     private static final int COMMIT_SIZE = 10;
     private int currentSteps;
 
