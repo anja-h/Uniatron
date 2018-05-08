@@ -11,6 +11,7 @@ import com.edu.uni.augsburg.uniatron.domain.converter.EmotionConverter;
 import com.edu.uni.augsburg.uniatron.domain.model.EmotionEntity;
 
 import java.util.Date;
+import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
@@ -30,6 +31,16 @@ public interface EmotionDao {
      */
     @Insert(onConflict = REPLACE)
     void insert(EmotionEntity emotion);
+
+    /**
+     * Load all emotions for a specified time range.
+     *
+     * @param dateFrom The date to start searching.
+     * @param dateTo The date to end searching.
+     * @return The emotions.
+     */
+    @Query("SELECT * FROM EmotionEntity WHERE timestamp BETWEEN :dateFrom AND :dateTo")
+    LiveData<List<EmotionEntity>> getAll(Date dateFrom, Date dateTo);
 
     /**
      * Load the average emotion for a specified time range.

@@ -3,13 +3,15 @@ package com.edu.uni.augsburg.uniatron.domain;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.test.InstrumentationRegistry;
 
 import com.edu.uni.augsburg.uniatron.domain.dao.AppUsageDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.StepCountDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.TimeCreditDao;
 import com.edu.uni.augsburg.uniatron.domain.model.AppUsageEntity;
-import com.edu.uni.augsburg.uniatron.domain.util.TestUtils;
 import com.edu.uni.augsburg.uniatron.model.AppUsage;
 import com.edu.uni.augsburg.uniatron.model.StepCount;
 import com.edu.uni.augsburg.uniatron.model.TimeCredit;
@@ -19,7 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,15 +30,16 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
-import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getLiveDataValue;
+import static com.edu.uni.augsburg.uniatron.domain.TestUtils.getLiveDataValue;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,17 +67,45 @@ public class DataRepositoryTest {
     }
 
     @Test
-    public void addTimeCredit() {
-        final TimeCredit timeCredit = mRepository.addTimeCredit(TimeCredits.CREDIT_1000);
-        assertThat(timeCredit, is(notNullValue()));
+    public void addTimeCredit() throws InterruptedException {
+        final TimeCredits timeCredits = TimeCredits.CREDIT_1000;
+        final LiveData<TimeCredit> timeCredit = mRepository.addTimeCredit(timeCredits);
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        final TimeCredit liveDataValue = getLiveDataValue(timeCredit);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue.getTimeInMinutes(), is(timeCredits.getTimeInMinutes()));
+        assertThat(liveDataValue.getStepCount(), is(timeCredits.getStepCount()));
     }
 
-    @Test(expected = Exception.class)
-    public void addTimeCreditFailed() {
-        Mockito.doThrow(Exception.class).when(timeCreditDao).add(any());
+    @Test
+    public void addStepCount() throws InterruptedException {
+        final int value = 10;
+        final LiveData<StepCount> stepCount = mRepository.addStepCount(value);
 
-        mRepository.addTimeCredit(TimeCredits.CREDIT_1000);
-        assertFalse("Should has thrown an exception!", true);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        final StepCount liveDataValue = getLiveDataValue(stepCount);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue.getStepCount(), is(value));
+    }
+
+    @Test
+    public void addAppUsage() throws InterruptedException {
+        final int value = 10;
+        final LiveData<AppUsage> appUsage = mRepository.addAppUsage("test", value);
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        final AppUsage liveDataValue = getLiveDataValue(appUsage);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue.getUsageTimeInSeconds(), is(value));
+    }
+
+    @Test
+    public void addEmotion() {
+        // TODO
     }
 
     @Test
@@ -86,7 +117,7 @@ public class DataRepositoryTest {
 
         final LiveData<Integer> timeCreditsToday = mRepository.getTimeCreditsToday();
 
-        final Integer liveDataValue = TestUtils.getLiveDataValue(timeCreditsToday);
+        final Integer liveDataValue = getLiveDataValue(timeCreditsToday);
         assertThat(liveDataValue, is(notNullValue()));
         assertThat(liveDataValue, is(value));
         verify(timeCreditDao, atLeastOnce()).loadTimeCredits(any(), any());
@@ -101,26 +132,10 @@ public class DataRepositoryTest {
 
         final LiveData<Integer> timeCreditsToday = mRepository.getTimeCreditsByDate(new Date());
 
-        final Integer liveDataValue = TestUtils.getLiveDataValue(timeCreditsToday);
+        final Integer liveDataValue = getLiveDataValue(timeCreditsToday);
         assertThat(liveDataValue, is(notNullValue()));
         assertThat(liveDataValue, is(value));
         verify(timeCreditDao, atLeastOnce()).loadTimeCredits(any(), any());
-    }
-
-    @Test
-    public void addStepCount() {
-        final int value = 10;
-        final StepCount stepCount = mRepository.addStepCount(value);
-        assertThat(stepCount, is(notNullValue()));
-        assertThat(stepCount.getStepCount(), is(value));
-    }
-
-    @Test(expected = Exception.class)
-    public void addStepCountFailed() {
-        Mockito.doThrow(Exception.class).when(stepCountDao).add(any());
-
-        mRepository.addStepCount(10);
-        assertFalse("Should has thrown an exception!", true);
     }
 
     @Test
@@ -131,7 +146,7 @@ public class DataRepositoryTest {
         when(stepCountDao.loadStepCounts(any(), any())).thenReturn(liveData);
 
         final LiveData<Integer> stepCountsToday = mRepository.getStepCountsToday();
-        final Integer liveDataValue = TestUtils.getLiveDataValue(stepCountsToday);
+        final Integer liveDataValue = getLiveDataValue(stepCountsToday);
         assertThat(liveDataValue, is(notNullValue()));
         assertThat(liveDataValue, is(value));
         verify(stepCountDao, atLeastOnce()).loadStepCounts(any(), any());
@@ -146,26 +161,20 @@ public class DataRepositoryTest {
 
         final LiveData<Integer> stepCountsToday = mRepository.getStepCountsByDate(new Date());
 
-        final Integer liveDataValue = TestUtils.getLiveDataValue(stepCountsToday);
+        final Integer liveDataValue = getLiveDataValue(stepCountsToday);
         assertThat(liveDataValue, is(notNullValue()));
         assertThat(liveDataValue, is(value));
         verify(stepCountDao, atLeastOnce()).loadStepCounts(any(), any());
     }
 
     @Test
-    public void addAppUsage() {
-        final int value = 10;
-        final AppUsage appUsage = mRepository.addAppUsage("test", value);
-        assertThat(appUsage, is(notNullValue()));
-        assertThat(appUsage.getUsageTimeInSeconds(), is(value));
+    public void getRemainingStepCountsToday() {
+        // TODO
     }
 
-    @Test(expected = Exception.class)
-    public void addAppUsageFailed() {
-        Mockito.doThrow(Exception.class).when(appUsageDao).add(any());
-
-        mRepository.addAppUsage("test", 10);
-        assertFalse("Should has thrown an exception!", true);
+    @Test
+    public void getRemainingStepCountsByDate() {
+        // TODO
     }
 
     @Test
@@ -292,6 +301,26 @@ public class DataRepositoryTest {
         assertThat(getLiveDataValue(data).keySet(), hasItems("Test", "Test1"));
         assertThat(getLiveDataValue(data).values(), hasItems(0.9, 0.1));
         verify(appUsageDao, atLeastOnce()).loadAppUsagePercent(any(), any());
+    }
+
+    @Test
+    public void getRemainingAppUsageTimeToday() {
+        // TODO
+    }
+
+    @Test
+    public void getRemainingAppUsageTimeByDate() {
+        // TODO
+    }
+
+    @Test
+    public void getAllEmotions() {
+        // TODO
+    }
+
+    @Test
+    public void getAverageEmotion() {
+        // TODO
     }
 
     @NonNull

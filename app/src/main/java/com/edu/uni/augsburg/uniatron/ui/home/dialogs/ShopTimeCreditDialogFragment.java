@@ -1,4 +1,4 @@
-package com.edu.uni.augsburg.uniatron.home.dialogs;
+package com.edu.uni.augsburg.uniatron.ui.home.dialogs;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -18,7 +18,7 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.edu.uni.augsburg.uniatron.MainApplication;
 import com.edu.uni.augsburg.uniatron.R;
-import com.edu.uni.augsburg.uniatron.home.HomeViewModel;
+import com.edu.uni.augsburg.uniatron.ui.home.HomeViewModel;
 import com.edu.uni.augsburg.uniatron.model.TimeCredits;
 
 import java.util.ArrayList;

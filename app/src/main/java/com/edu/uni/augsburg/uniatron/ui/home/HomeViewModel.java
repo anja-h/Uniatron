@@ -1,4 +1,4 @@
-package com.edu.uni.augsburg.uniatron.home;
+package com.edu.uni.augsburg.uniatron.ui.home;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -54,7 +54,7 @@ public class HomeViewModel extends AndroidViewModel {
         mObservableRemainingAppUsageTime = new MediatorLiveData<>();
         mObservableRemainingAppUsageTime.setValue(null);
 
-        final LiveData<Integer> remainingUsageTimeToday = repository.getRemainingUsageTimeToday();
+        final LiveData<Integer> remainingUsageTimeToday = repository.getRemainingAppUsageTimeToday();
         mObservableRemainingAppUsageTime.addSource(remainingUsageTimeToday,
                 mObservableRemainingAppUsageTime::setValue);
     }

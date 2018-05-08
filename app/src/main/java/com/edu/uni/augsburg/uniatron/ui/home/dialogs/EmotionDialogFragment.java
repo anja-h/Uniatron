@@ -1,4 +1,4 @@
-package com.edu.uni.augsburg.uniatron.home.dialogs;
+package com.edu.uni.augsburg.uniatron.ui.home.dialogs;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -8,12 +8,10 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
 
 import com.edu.uni.augsburg.uniatron.R;
-import com.edu.uni.augsburg.uniatron.home.HomeViewModel;
+import com.edu.uni.augsburg.uniatron.ui.home.HomeViewModel;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 

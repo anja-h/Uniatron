@@ -1,6 +1,7 @@
 package com.edu.uni.augsburg.uniatron.domain.dao;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 
@@ -28,7 +29,9 @@ public class TimeCreditDaoTest {
     @Before
     public void setUp() {
         final Context context = InstrumentationRegistry.getTargetContext();
-        mDb = AppDatabase.buildInMemory(context);
+        mDb = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
+                .allowMainThreadQueries()
+                .build();
         mDao = mDb.timeCreditDao();
     }
 

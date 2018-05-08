@@ -1,9 +1,17 @@
 package com.edu.uni.augsburg.uniatron;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
 import com.edu.uni.augsburg.uniatron.domain.DataRepository;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * The application context for this app.
@@ -17,7 +25,20 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        mDataRepository = new DataRepository(AppDatabase.buildInMemory(this));
+        // TODO For the final app use the real database
+        /*
+        final AppDatabase database = Room.databaseBuilder(
+                this,
+                AppDatabase.class,
+                "uniatron")
+                .build();
+         */
+
+        final AppDatabase database = Room.inMemoryDatabaseBuilder(this, AppDatabase.class)
+                .allowMainThreadQueries()
+                .build();
+
+        mDataRepository = new DataRepository(database);
 
         mDataRepository.addAppUsage("WhatsApp", 143);
         mDataRepository.addAppUsage("Facebook", 231);

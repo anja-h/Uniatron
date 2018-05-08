@@ -1,12 +1,10 @@
-package com.edu.uni.augsburg.uniatron.domain.util;
+package com.edu.uni.augsburg.uniatron.domain;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;

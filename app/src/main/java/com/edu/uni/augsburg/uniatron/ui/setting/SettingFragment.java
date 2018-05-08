@@ -1,4 +1,4 @@
-package com.edu.uni.augsburg.uniatron.setting;
+package com.edu.uni.augsburg.uniatron.ui.setting;
 
 
 import android.arch.lifecycle.ViewModelProviders;

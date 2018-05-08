@@ -1,4 +1,4 @@
-package com.edu.uni.augsburg.uniatron.history;
+package com.edu.uni.augsburg.uniatron.ui.history;
 
 import android.support.v4.app.Fragment;
 

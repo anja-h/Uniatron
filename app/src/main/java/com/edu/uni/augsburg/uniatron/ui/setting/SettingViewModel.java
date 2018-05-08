@@ -1,14 +1,14 @@
-package com.edu.uni.augsburg.uniatron.setting;
+package com.edu.uni.augsburg.uniatron.ui.setting;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.annimon.stream.Collectors;
@@ -23,13 +23,16 @@ import java.util.Set;
  *
  * @author Fabio Hellmann
  */
-public class SettingViewModel extends ViewModel {
+public class SettingViewModel extends AndroidViewModel {
     private final MutableLiveData<Set<String>> mObservableInstalledApps;
 
     /**
      * Ctr.
+     *
+     * @param application The application.
      */
-    public SettingViewModel() {
+    public SettingViewModel(@NonNull Application application) {
+        super(application);
         mObservableInstalledApps = new MutableLiveData<>();
         mObservableInstalledApps.setValue(null);
     }

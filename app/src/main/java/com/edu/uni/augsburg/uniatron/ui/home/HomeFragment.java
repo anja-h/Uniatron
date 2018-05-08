@@ -1,4 +1,4 @@
-package com.edu.uni.augsburg.uniatron.home;
+package com.edu.uni.augsburg.uniatron.ui.home;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.edu.uni.augsburg.uniatron.R;
-import com.edu.uni.augsburg.uniatron.home.dialogs.EmotionDialogFragment;
-import com.edu.uni.augsburg.uniatron.home.dialogs.ShopTimeCreditDialogFragment;
+import com.edu.uni.augsburg.uniatron.ui.home.dialogs.EmotionDialogFragment;
+import com.edu.uni.augsburg.uniatron.ui.home.dialogs.ShopTimeCreditDialogFragment;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -23,7 +23,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;

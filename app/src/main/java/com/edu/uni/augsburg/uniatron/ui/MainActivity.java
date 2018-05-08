@@ -1,4 +1,4 @@
-package com.edu.uni.augsburg.uniatron;
+package com.edu.uni.augsburg.uniatron.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
@@ -8,9 +8,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.edu.uni.augsburg.uniatron.history.HistoryFragment;
-import com.edu.uni.augsburg.uniatron.home.HomeFragment;
-import com.edu.uni.augsburg.uniatron.setting.SettingFragment;
+import com.edu.uni.augsburg.uniatron.R;
+import com.edu.uni.augsburg.uniatron.ui.history.HistoryFragment;
+import com.edu.uni.augsburg.uniatron.ui.home.HomeFragment;
+import com.edu.uni.augsburg.uniatron.ui.setting.SettingFragment;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
