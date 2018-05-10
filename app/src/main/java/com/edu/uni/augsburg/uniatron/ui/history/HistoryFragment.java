@@ -42,8 +42,8 @@ public class HistoryFragment extends Fragment {
     @BindView(R.id.recyclerViewHistory)
     RecyclerView mRecyclerViewHistory;
 
-    private Date mDateFrom;
     private Date mDateTo;
+    private Date mDateFrom;
 
     @Nullable
     @Override
@@ -68,8 +68,8 @@ public class HistoryFragment extends Fragment {
         final ItemAdapter itemAdapter = new ItemAdapter();
         mRecyclerViewHistory.setAdapter(itemAdapter);
 
-        mDateFrom = new Date();
-        mDateTo = getPreviousDate(mDateFrom, DAYS_TO_LOAD);
+        mDateTo = new Date();
+        mDateFrom = getPreviousDate(mDateTo, DAYS_TO_LOAD);
 
         model.getSummary(mDateFrom, mDateTo).observe(this, data -> {
             itemAdapter.clear();
@@ -80,8 +80,8 @@ public class HistoryFragment extends Fragment {
             itemAdapter.showLoading();
 
             // define next interval to load
-            mDateFrom = mDateTo;
-            mDateTo = getPreviousDate(mDateFrom, DAYS_TO_LOAD);
+            mDateTo = mDateFrom;
+            mDateFrom = getPreviousDate(mDateTo, DAYS_TO_LOAD);
 
             model.getSummary(mDateFrom, mDateTo).observe(this, itemAdapter::addItems);
         });
@@ -120,8 +120,8 @@ public class HistoryFragment extends Fragment {
 
     final class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-        private final int VIEW_TYPE_ITEM = 0;
-        private final int VIEW_TYPE_LOADING = 1;
+        private static final int VIEW_TYPE_ITEM = 0;
+        private static final int VIEW_TYPE_LOADING = 1;
 
         private final List<Summary> mSummaries = new ArrayList<>();
 
@@ -153,8 +153,8 @@ public class HistoryFragment extends Fragment {
             });
         }
 
-        void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-            this.mOnLoadMoreListener = mOnLoadMoreListener;
+        void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+            this.mOnLoadMoreListener = onLoadMoreListener;
         }
 
         void showLoading() {

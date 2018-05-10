@@ -14,12 +14,19 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * The {@link HistoryViewModel} provides the data for the {@link HistoryFragment}.
+ *
  * @author Fabio Hellmann
  */
 public class HistoryViewModel extends AndroidViewModel {
     private final MediatorLiveData<List<Summary>> mObservableDaySummary;
     private final DataRepository mRepository;
 
+    /**
+     * Ctr.
+     *
+     * @param application The application.
+     */
     public HistoryViewModel(@NonNull Application application) {
         super(application);
 
@@ -28,6 +35,13 @@ public class HistoryViewModel extends AndroidViewModel {
         mObservableDaySummary = new MediatorLiveData<>();
     }
 
+    /**
+     * Get the summary for the specified time range.
+     *
+     * @param from The date to start searching.
+     * @param to   The date to end searching.
+     * @return The summary.
+     */
     public LiveData<List<Summary>> getSummary(Date from, Date to) {
         mObservableDaySummary.addSource(
                 mRepository.getSummary(from, to),
