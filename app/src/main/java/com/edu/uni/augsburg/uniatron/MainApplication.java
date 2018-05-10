@@ -2,16 +2,9 @@ package com.edu.uni.augsburg.uniatron;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
 import com.edu.uni.augsburg.uniatron.domain.DataRepository;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * The application context for this app.

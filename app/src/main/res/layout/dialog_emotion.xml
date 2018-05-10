@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/dialog_emotion_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+        app:layout_constraintBottom_toTopOf="@+id/radioGroupEmotion"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +22,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <RadioGroup
-        android:id="@+id/radioGroup"
+        android:id="@+id/radioGroupEmotion"
         android:layout_width="263dp"
         android:layout_height="34dp"
         android:layout_marginBottom="@dimen/activity_vertical_margin"

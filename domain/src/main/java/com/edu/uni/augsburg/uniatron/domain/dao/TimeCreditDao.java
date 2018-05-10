@@ -36,7 +36,7 @@ public interface TimeCreditDao {
      * @param dateTo The date to end searching.
      * @return the remaining time credits.
      */
-    @Query("SELECT SUM(time_in_minutes) FROM TimeCreditEntity "
+    @Query("SELECT TOTAL(time_in_minutes) FROM TimeCreditEntity "
             + "WHERE timestamp BETWEEN :dateFrom AND :dateTo")
     LiveData<Integer> loadTimeCredits(Date dateFrom, Date dateTo);
 }

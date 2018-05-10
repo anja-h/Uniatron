@@ -38,25 +38,22 @@ public class HomeViewModel extends AndroidViewModel {
         final DataRepository repository = ((MainApplication) application).getRepository();
 
         mObservableAppUsages = new MediatorLiveData<>();
-        mObservableAppUsages.setValue(null);
-
-        final LiveData<Map<String, Double>> appUsagePercentToday =
-                repository.getAppUsagePercentToday();
-        mObservableAppUsages.addSource(appUsagePercentToday, mObservableAppUsages::setValue);
+        mObservableAppUsages.addSource(
+                repository.getAppUsagePercentToday(),
+                mObservableAppUsages::setValue
+        );
 
         mObservableRemainingStepCount = new MediatorLiveData<>();
-        mObservableRemainingStepCount.setValue(null);
-
-        final LiveData<Integer> remainingStepCountsToday = repository.getRemainingStepCountsToday();
-        mObservableRemainingStepCount.addSource(remainingStepCountsToday,
-                mObservableRemainingStepCount::setValue);
+        mObservableRemainingStepCount.addSource(
+                repository.getRemainingStepCountsToday(),
+                mObservableRemainingStepCount::setValue
+        );
 
         mObservableRemainingAppUsageTime = new MediatorLiveData<>();
-        mObservableRemainingAppUsageTime.setValue(null);
-
-        final LiveData<Integer> remainingUsageTimeToday = repository.getRemainingAppUsageTimeToday();
-        mObservableRemainingAppUsageTime.addSource(remainingUsageTimeToday,
-                mObservableRemainingAppUsageTime::setValue);
+        mObservableRemainingAppUsageTime.addSource(
+                repository.getRemainingAppUsageTimeToday(),
+                mObservableRemainingAppUsageTime::setValue
+        );
     }
 
     /**
@@ -77,7 +74,7 @@ public class HomeViewModel extends AndroidViewModel {
     @NonNull
     public LiveData<Integer> getRemainingStepCountToday() {
         return Transformations.map(mObservableRemainingStepCount,
-                data -> data != null && data > 0? data : 0);
+                data -> data != null && data > 0 ? data : 0);
     }
 
     /**

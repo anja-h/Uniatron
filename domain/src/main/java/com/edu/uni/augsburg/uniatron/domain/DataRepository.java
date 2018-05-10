@@ -16,6 +16,7 @@ import com.edu.uni.augsburg.uniatron.model.AppUsage;
 import com.edu.uni.augsburg.uniatron.model.Emotion;
 import com.edu.uni.augsburg.uniatron.model.Emotions;
 import com.edu.uni.augsburg.uniatron.model.StepCount;
+import com.edu.uni.augsburg.uniatron.model.Summary;
 import com.edu.uni.augsburg.uniatron.model.TimeCredit;
 import com.edu.uni.augsburg.uniatron.model.TimeCredits;
 
@@ -39,7 +40,7 @@ public final class DataRepository {
     /**
      * ctr.
      *
-     * @param database         The data store.
+     * @param database The data store.
      */
     public DataRepository(@NonNull final AppDatabase database) {
         mDatabase = database;
@@ -283,7 +284,7 @@ public final class DataRepository {
                     final EmotionEntity emotionEntity = new EmotionEntity();
                     emotionEntity.setTimestamp(new Date());
                     emotionEntity.setValue(emotions);
-                    mDatabase.emotionDao().insert(emotionEntity);
+                    mDatabase.emotionDao().add(emotionEntity);
                     return emotionEntity;
                 },
                 observable::setValue
@@ -319,7 +320,21 @@ public final class DataRepository {
         final Date dateTo = extractMaxTimeOfDate(date);
         return Transformations.map(
                 mDatabase.emotionDao().getAverageEmotion(dateFrom, dateTo),
-                data -> data != null ? Emotions.values()[data] : Emotions.NEUTRAL
+                data -> {
+                    if (data != null) {
+                        final int index = (int) Math.round(data);
+                        return Emotions.values()[index];
+                    }
+                    return Emotions.NEUTRAL;
+                }
+        );
+    }
+
+    public LiveData<List<Summary>> getSummary(@NonNull final Date dateFrom,
+                                              @NonNull final Date dateTo) {
+        return Transformations.map(
+                mDatabase.summaryDao().getSummaries(dateFrom, dateTo),
+                data -> Stream.of(data).collect(Collectors.toList())
         );
     }
 }

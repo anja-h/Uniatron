@@ -10,7 +10,7 @@ staticAnalysis {
         includeVariants { variant -> variant.name.contains('debug') }
     }
     pmd {
-        toolVersion '6.1.0'
+        toolVersion '6.3.0'
         exclude project.fileTree('src/test/java')
         exclude project.fileTree('src/androidTest/java')
         ruleSetFiles = rootProject.files('tools/pmd.xml')

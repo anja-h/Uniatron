@@ -30,7 +30,7 @@ public interface EmotionDao {
      * @param emotion The emotion to persist.
      */
     @Insert(onConflict = REPLACE)
-    void insert(EmotionEntity emotion);
+    void add(EmotionEntity emotion);
 
     /**
      * Load all emotions for a specified time range.
@@ -49,6 +49,6 @@ public interface EmotionDao {
      * @param dateTo The date to end searching.
      * @return The average emotion.
      */
-    @Query("SELECT SUM(value) FROM EmotionEntity WHERE timestamp BETWEEN :dateFrom AND :dateTo")
-    LiveData<Integer> getAverageEmotion(Date dateFrom, Date dateTo);
+    @Query("SELECT AVG(value) FROM EmotionEntity WHERE timestamp BETWEEN :dateFrom AND :dateTo")
+    LiveData<Double> getAverageEmotion(Date dateFrom, Date dateTo);
 }

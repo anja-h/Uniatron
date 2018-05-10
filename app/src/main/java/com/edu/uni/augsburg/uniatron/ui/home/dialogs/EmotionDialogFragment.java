@@ -8,10 +8,13 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RadioGroup;
 
 import com.edu.uni.augsburg.uniatron.R;
-import com.edu.uni.augsburg.uniatron.ui.home.HomeViewModel;
+import com.edu.uni.augsburg.uniatron.model.Emotions;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -25,6 +28,11 @@ public class EmotionDialogFragment extends DialogFragment {
      * The name of this dialog.
      */
     public static final String NAME = EmotionDialogFragment.class.getSimpleName();
+
+    @BindView(R.id.radioGroupEmotion)
+    RadioGroup mRadioGroupEmotion;
+    @BindView(R.id.okButton)
+    Button mOkButton;
 
     @Nullable
     @Override
@@ -43,8 +51,6 @@ public class EmotionDialogFragment extends DialogFragment {
         setAllowReturnTransitionOverlap(false);
         setAllowEnterTransitionOverlap(false);
         setCancelable(false);
-
-        final HomeViewModel model = ViewModelProviders.of(this).get(HomeViewModel.class);
     }
 
     /**
@@ -52,6 +58,17 @@ public class EmotionDialogFragment extends DialogFragment {
      */
     @OnClick(R.id.okButton)
     public void onOkButtonClicked() {
-        dismiss();
+        mOkButton.setEnabled(false);
+
+        final EmotionDialogViewModel model = ViewModelProviders.of(this)
+                .get(EmotionDialogViewModel.class);
+
+        final int checkedRadioButtonId = mRadioGroupEmotion.getCheckedRadioButtonId();
+        final View checkedRadioButton = mRadioGroupEmotion.findViewById(checkedRadioButtonId);
+        final int checkedIndex = mRadioGroupEmotion.indexOfChild(checkedRadioButton);
+
+        model.addEmotion(Emotions.values()[checkedIndex]).observe(this, data -> {
+            dismiss();
+        });
     }
 }

@@ -36,6 +36,8 @@ import butterknife.OnClick;
  */
 public class HomeFragment extends Fragment {
 
+    private static final int ANIMATION_DURATION_LENGTH = 2000;
+
     @BindView(R.id.appUsageChart)
     PieChart mAppUsagePieChart;
     @BindView(R.id.stepButton)
@@ -92,7 +94,7 @@ public class HomeFragment extends Fragment {
                 }
                 pieDataSet.addEntry(new PieEntry(1 - value, getString(R.string.app_others)));
             }
-            mAppUsagePieChart.animateY(2000, Easing.EasingOption.EaseInQuad);
+            mAppUsagePieChart.animateY(ANIMATION_DURATION_LENGTH, Easing.EasingOption.EaseInQuad);
             mAppUsagePieChart.notifyDataSetChanged();
         });
 

@@ -33,8 +33,8 @@ public class SettingViewModel extends AndroidViewModel {
      */
     public SettingViewModel(@NonNull Application application) {
         super(application);
+
         mObservableInstalledApps = new MutableLiveData<>();
-        mObservableInstalledApps.setValue(null);
     }
 
     /**

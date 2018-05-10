@@ -12,6 +12,7 @@ import com.edu.uni.augsburg.uniatron.domain.converter.EmotionConverter;
 import com.edu.uni.augsburg.uniatron.domain.dao.AppUsageDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.EmotionDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.StepCountDao;
+import com.edu.uni.augsburg.uniatron.domain.dao.SummaryDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.TimeCreditDao;
 import com.edu.uni.augsburg.uniatron.domain.model.AppUsageEntity;
 import com.edu.uni.augsburg.uniatron.domain.model.EmotionEntity;
@@ -59,4 +60,6 @@ public abstract class AppDatabase extends RoomDatabase {
      * @return the emotion dao.
      */
     public abstract EmotionDao emotionDao();
+
+    public abstract SummaryDao summaryDao();
 }

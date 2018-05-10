@@ -3,9 +3,6 @@ package com.edu.uni.augsburg.uniatron.domain;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.os.Handler;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 
 import com.edu.uni.augsburg.uniatron.domain.dao.AppUsageDao;
@@ -13,6 +10,8 @@ import com.edu.uni.augsburg.uniatron.domain.dao.StepCountDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.TimeCreditDao;
 import com.edu.uni.augsburg.uniatron.domain.model.AppUsageEntity;
 import com.edu.uni.augsburg.uniatron.model.AppUsage;
+import com.edu.uni.augsburg.uniatron.model.Emotion;
+import com.edu.uni.augsburg.uniatron.model.Emotions;
 import com.edu.uni.augsburg.uniatron.model.StepCount;
 import com.edu.uni.augsburg.uniatron.model.TimeCredit;
 import com.edu.uni.augsburg.uniatron.model.TimeCredits;
@@ -21,25 +20,20 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
-import static com.edu.uni.augsburg.uniatron.domain.TestUtils.getLiveDataValue;
+import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getLiveDataValue;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,6 +74,21 @@ public class DataRepositoryTest {
     }
 
     @Test
+    public void getTimeCredits() throws InterruptedException {
+        final int value = 10;
+        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
+        liveData.setValue(value);
+        when(timeCreditDao.loadTimeCredits(any(), any())).thenReturn(liveData);
+
+        final LiveData<Integer> timeCreditsToday = mRepository.getTimeCreditsToday();
+
+        final Integer liveDataValue = getLiveDataValue(timeCreditsToday);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(value));
+        verify(timeCreditDao, atLeastOnce()).loadTimeCredits(any(), any());
+    }
+
+    @Test
     public void addStepCount() throws InterruptedException {
         final int value = 10;
         final LiveData<StepCount> stepCount = mRepository.addStepCount(value);
@@ -89,6 +98,49 @@ public class DataRepositoryTest {
         final StepCount liveDataValue = getLiveDataValue(stepCount);
         assertThat(liveDataValue, is(notNullValue()));
         assertThat(liveDataValue.getStepCount(), is(value));
+    }
+
+    @Test
+    public void getStepCounts() throws InterruptedException {
+        final int value = 10;
+        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
+        liveData.setValue(value);
+        when(stepCountDao.loadStepCounts(any(), any())).thenReturn(liveData);
+
+        final LiveData<Integer> stepCountsToday = mRepository.getStepCountsToday();
+
+        final Integer liveDataValue = getLiveDataValue(stepCountsToday);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(value));
+        verify(stepCountDao, atLeastOnce()).loadStepCounts(any(), any());
+    }
+
+    @Test
+    public void getRemainingStepCounts() throws InterruptedException {
+        final int value = 10;
+        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
+        liveData.setValue(value);
+        when(stepCountDao.loadRemainingStepCount(any(), any())).thenReturn(liveData);
+
+        final LiveData<Integer> data = mRepository.getRemainingStepCountsToday();
+
+        final Integer liveDataValue = getLiveDataValue(data);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(value));
+    }
+
+    @Test
+    public void getRemainingStepCountsNegative() throws InterruptedException {
+        final int value = -10;
+        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
+        liveData.setValue(value);
+        when(stepCountDao.loadRemainingStepCount(any(), any())).thenReturn(liveData);
+
+        final LiveData<Integer> data = mRepository.getRemainingStepCountsToday();
+
+        final Integer liveDataValue = getLiveDataValue(data);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(0));
     }
 
     @Test
@@ -104,81 +156,7 @@ public class DataRepositoryTest {
     }
 
     @Test
-    public void addEmotion() {
-        // TODO
-    }
-
-    @Test
-    public void getTimeCreditsToday() throws InterruptedException {
-        final int value = 10;
-        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
-        liveData.setValue(value);
-        when(timeCreditDao.loadTimeCredits(any(), any())).thenReturn(liveData);
-
-        final LiveData<Integer> timeCreditsToday = mRepository.getTimeCreditsToday();
-
-        final Integer liveDataValue = getLiveDataValue(timeCreditsToday);
-        assertThat(liveDataValue, is(notNullValue()));
-        assertThat(liveDataValue, is(value));
-        verify(timeCreditDao, atLeastOnce()).loadTimeCredits(any(), any());
-    }
-
-    @Test
-    public void getTimeCreditsByDate() throws InterruptedException {
-        final int value = 10;
-        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
-        liveData.setValue(value);
-        when(timeCreditDao.loadTimeCredits(any(), any())).thenReturn(liveData);
-
-        final LiveData<Integer> timeCreditsToday = mRepository.getTimeCreditsByDate(new Date());
-
-        final Integer liveDataValue = getLiveDataValue(timeCreditsToday);
-        assertThat(liveDataValue, is(notNullValue()));
-        assertThat(liveDataValue, is(value));
-        verify(timeCreditDao, atLeastOnce()).loadTimeCredits(any(), any());
-    }
-
-    @Test
-    public void getStepCountsToday() throws InterruptedException {
-        final int value = 10;
-        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
-        liveData.setValue(value);
-        when(stepCountDao.loadStepCounts(any(), any())).thenReturn(liveData);
-
-        final LiveData<Integer> stepCountsToday = mRepository.getStepCountsToday();
-        final Integer liveDataValue = getLiveDataValue(stepCountsToday);
-        assertThat(liveDataValue, is(notNullValue()));
-        assertThat(liveDataValue, is(value));
-        verify(stepCountDao, atLeastOnce()).loadStepCounts(any(), any());
-    }
-
-    @Test
-    public void getStepCountsByDate() throws InterruptedException {
-        final int value = 10;
-        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
-        liveData.setValue(value);
-        when(stepCountDao.loadStepCounts(any(), any())).thenReturn(liveData);
-
-        final LiveData<Integer> stepCountsToday = mRepository.getStepCountsByDate(new Date());
-
-        final Integer liveDataValue = getLiveDataValue(stepCountsToday);
-        assertThat(liveDataValue, is(notNullValue()));
-        assertThat(liveDataValue, is(value));
-        verify(stepCountDao, atLeastOnce()).loadStepCounts(any(), any());
-    }
-
-    @Test
-    public void getRemainingStepCountsToday() {
-        // TODO
-    }
-
-    @Test
-    public void getRemainingStepCountsByDate() {
-        // TODO
-    }
-
-    @Test
-    public void getAppUsageTimeToday() throws Exception {
+    public void getAppUsageTime() throws Exception {
         final List<AppUsageEntity> list = new ArrayList<>();
 
         final AppUsageEntity entity = new AppUsageEntity();
@@ -209,39 +187,7 @@ public class DataRepositoryTest {
     }
 
     @Test
-    public void getAppUsageTimeByDate() throws Exception {
-        final List<AppUsageEntity> list = new ArrayList<>();
-
-        final AppUsageEntity entity = new AppUsageEntity();
-        entity.setId(0);
-        entity.setTimestamp(getDate(1, 1, 1990));
-        entity.setUsageTimeInSeconds(10);
-        entity.setAppName("Test");
-        list.add(entity);
-
-        final AppUsageEntity entity1 = new AppUsageEntity();
-        entity1.setId(1);
-        entity1.setTimestamp(getDate(1, 1, 2000));
-        entity1.setUsageTimeInSeconds(7);
-        entity1.setAppName("Test1");
-        list.add(entity1);
-
-        final MutableLiveData<List<AppUsageEntity>> liveData = new MutableLiveData<>();
-        liveData.setValue(list);
-        when(appUsageDao.loadAppUsageTime(any(), any())).thenReturn(liveData);
-
-        final LiveData<Map<String, Integer>> data = mRepository
-                .getAppUsageTimeByDate(getDate(1, 1, 2000));
-
-        assertThat(getLiveDataValue(data), is(notNullValue()));
-        assertThat(getLiveDataValue(data).size(), is(2));
-        assertThat(getLiveDataValue(data).keySet(), hasItems("Test", "Test1"));
-        assertThat(getLiveDataValue(data).values(), hasItems(10, 7));
-        verify(appUsageDao, atLeastOnce()).loadAppUsageTime(any(), any());
-    }
-
-    @Test
-    public void getAppUsagePercentToday() throws Exception {
+    public void getAppUsagePercent() throws Exception {
         final List<AppUsageEntity> list = new ArrayList<>();
 
         final AppUsageEntity entity = new AppUsageEntity();
@@ -264,69 +210,72 @@ public class DataRepositoryTest {
 
         final LiveData<Map<String, Double>> data = mRepository.getAppUsagePercentToday();
 
-        assertThat(getLiveDataValue(data), is(notNullValue()));
-        assertThat(getLiveDataValue(data).size(), is(2));
-        assertThat(getLiveDataValue(data).keySet(), hasItems("Test", "Test1"));
-        assertThat(getLiveDataValue(data).values(), hasItems(0.90, 0.10));
+        final Map<String, Double> liveDataValue = getLiveDataValue(data);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue.size(), is(2));
+        assertThat(liveDataValue.keySet(), hasItems("Test", "Test1"));
+        assertThat(liveDataValue.values(), hasItems(0.90, 0.10));
         verify(appUsageDao, atLeastOnce()).loadAppUsagePercent(any(), any());
     }
 
     @Test
-    public void getAppUsagePercentByDate() throws Exception {
-        final List<AppUsageEntity> list = new ArrayList<>();
+    public void getRemainingAppUsageTime() throws InterruptedException {
+        final int value = 10;
+        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
+        liveData.setValue(value);
+        when(appUsageDao.loadRemainingAppUsageTime(any(), any())).thenReturn(liveData);
 
-        final AppUsageEntity entity = new AppUsageEntity();
-        entity.setId(0);
-        entity.setTimestamp(getDate(1, 1, 1990));
-        entity.setUsageTimeInSeconds(90);
-        entity.setAppName("Test");
-        list.add(entity);
+        final LiveData<Integer> data = mRepository.getRemainingAppUsageTimeToday();
 
-        final AppUsageEntity entity1 = new AppUsageEntity();
-        entity1.setId(1);
-        entity1.setTimestamp(getDate(1, 1, 2000));
-        entity1.setUsageTimeInSeconds(10);
-        entity1.setAppName("Test1");
-        list.add(entity1);
-
-        final MutableLiveData<List<AppUsageEntity>> liveData = new MutableLiveData<>();
-        liveData.setValue(list);
-        when(appUsageDao.loadAppUsagePercent(any(), any())).thenReturn(liveData);
-
-        final LiveData<Map<String, Double>> data = mRepository
-                .getAppUsagePercentByDate(getDate(1, 1, 2000));
-
-        assertThat(getLiveDataValue(data), is(notNullValue()));
-        assertThat(getLiveDataValue(data).size(), is(2));
-        assertThat(getLiveDataValue(data).keySet(), hasItems("Test", "Test1"));
-        assertThat(getLiveDataValue(data).values(), hasItems(0.9, 0.1));
-        verify(appUsageDao, atLeastOnce()).loadAppUsagePercent(any(), any());
+        final Integer liveDataValue = getLiveDataValue(data);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(10));
     }
 
     @Test
-    public void getRemainingAppUsageTimeToday() {
-        // TODO
+    public void addEmotion() throws InterruptedException {
+        final Emotions value = Emotions.NEUTRAL;
+        final LiveData<Emotion> emotion = mRepository.addEmotion(value);
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        final Emotion liveDataValue = getLiveDataValue(emotion);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue.getValue(), is(value));
     }
 
     @Test
-    public void getRemainingAppUsageTimeByDate() {
-        // TODO
+    public void getAllEmotions() throws InterruptedException {
+        mRepository.addEmotion(Emotions.NEUTRAL);
+        mRepository.addEmotion(Emotions.HAPPINESS);
+        mRepository.addEmotion(Emotions.SADNESS);
+        mRepository.addEmotion(Emotions.ANGRY);
+        mRepository.addEmotion(Emotions.NEUTRAL);
+
+        final LiveData<List<Emotion>> allEmotions = mRepository.getAllEmotions(new Date());
+
+        final List<Emotion> liveDataValue = getLiveDataValue(allEmotions);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue.size(), is(5));
     }
 
     @Test
-    public void getAllEmotions() {
-        // TODO
-    }
+    public void getAverageEmotion() throws InterruptedException {
+        mRepository.addEmotion(Emotions.NEUTRAL);
+        mRepository.addEmotion(Emotions.HAPPINESS);
+        mRepository.addEmotion(Emotions.SADNESS);
+        mRepository.addEmotion(Emotions.ANGRY);
+        mRepository.addEmotion(Emotions.NEUTRAL);
 
-    @Test
-    public void getAverageEmotion() {
-        // TODO
-    }
+        // Ordinary sum is 8.
+        // This divided by 5 (amount of items).
+        // The result is 1,6 -> round up to 2.
+        // Which means Emotions (ordinary) NEUTRAL is the result.
 
-    @NonNull
-    private static Date getDate(int date, int month, int year) {
-        final Calendar calendar = GregorianCalendar.getInstance();
-        calendar.set(year, month - 1, date);
-        return calendar.getTime();
+        final LiveData<Emotions> emotion = mRepository.getAverageEmotion(new Date());
+
+        final Emotions liveDataValue = getLiveDataValue(emotion);
+        assertThat(liveDataValue, is(notNullValue()));
+        assertThat(liveDataValue, is(Emotions.NEUTRAL));
     }
 }
