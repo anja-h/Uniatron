@@ -8,10 +8,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
-import com.edu.uni.augsburg.uniatron.domain.model.AppUsageEntity;
 import com.edu.uni.augsburg.uniatron.domain.model.EmotionEntity;
-import com.edu.uni.augsburg.uniatron.domain.util.DateUtils;
-import com.edu.uni.augsburg.uniatron.domain.util.TestUtils;
 import com.edu.uni.augsburg.uniatron.model.Emotions;
 
 import org.junit.After;
@@ -24,8 +21,8 @@ import org.junit.runner.RunWith;
 import java.util.Date;
 import java.util.List;
 
-import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMaxTimeOfDate;
-import static com.edu.uni.augsburg.uniatron.domain.util.DateUtils.extractMinTimeOfDate;
+import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMaxTimeOfDate;
+import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMinTimeOfDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getLiveDataValue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;

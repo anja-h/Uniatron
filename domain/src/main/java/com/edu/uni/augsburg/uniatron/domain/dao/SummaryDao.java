@@ -15,13 +15,11 @@ import java.util.List;
 @TypeConverters({DateConverter.class})
 public interface SummaryDao {
 
-    @Query("SELECT date(timestamp) as 'mTimestamp', " +
+    @Query("SELECT MAX(timestamp) as 'mTimestamp', " +
             "TOTAL(usage_time_in_seconds) as 'mAppUsageTime', " +
-            "TOTAL(sce.step_count) as 'mSteps', " +
-            "CASE WHEN AVG(ee.value) IS NULL THEN 0.0 ELSE AVG(ee.value) END as 'mEmotionAvg' " +
-            "FROM AppUsageEntity, " +
-            "(SELECT date(timestamp), step_count FROM StepCountEntity WHERE timestamp BETWEEN :dateFrom AND :dateTo) sce, " +
-            "(SELECT date(timestamp), value FROM EmotionEntity WHERE timestamp BETWEEN :dateFrom AND :dateTo) ee " +
+            "(SELECT TOTAL(step_count) FROM StepCountEntity WHERE date(timestamp) = date(aue.timestamp)) as 'mSteps', " +
+            "(SELECT CASE WHEN AVG(value) IS NULL THEN 0.0 ELSE AVG(value) END FROM EmotionEntity WHERE date(timestamp) = date(aue.timestamp)) as 'mEmotionAvg' " +
+            "FROM AppUsageEntity aue " +
             "WHERE timestamp BETWEEN :dateFrom AND :dateTo " +
             "GROUP BY date(timestamp) " +
             "ORDER BY timestamp DESC")

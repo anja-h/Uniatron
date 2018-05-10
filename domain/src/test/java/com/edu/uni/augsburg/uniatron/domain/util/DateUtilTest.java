@@ -7,13 +7,13 @@ import java.util.Date;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DateUtilsTest {
+public class DateUtilTest {
 
     @Test
     public void extractMinTimeOfDate() {
         final Date now = new Date();
 
-        final Date date = DateUtils.extractMinTimeOfDate(now);
+        final Date date = DateUtil.extractMinTimeOfDate(now);
 
         assertThat(date.getHours(), is(0));
         assertThat(date.getMinutes(), is(0));
@@ -24,7 +24,7 @@ public class DateUtilsTest {
     public void extractMaxTimeOfDate() {
         final Date now = new Date();
 
-        final Date date = DateUtils.extractMaxTimeOfDate(now);
+        final Date date = DateUtil.extractMaxTimeOfDate(now);
 
         assertThat(date.getHours(), is(23));
         assertThat(date.getMinutes(), is(59));

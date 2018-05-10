@@ -11,14 +11,14 @@ import java.util.GregorianCalendar;
  *
  * @author Fabio Hellmann
  */
-public final class DateUtils {
+public final class DateUtil {
 
     private static final int HOUR_OF_DAY_MAX = 23;
     private static final int MINUTE_MAX = 59;
     private static final int SECOND_MAX = 59;
     private static final int MILLISECOND_MAX = 999;
 
-    private DateUtils() {
+    private DateUtil() {
     }
 
     /**

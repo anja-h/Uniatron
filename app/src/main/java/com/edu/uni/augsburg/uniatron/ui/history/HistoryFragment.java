@@ -33,6 +33,9 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMaxTimeOfDate;
+import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMinTimeOfDate;
+
 /**
  * This displays a history of all the previous data.
  *
@@ -40,7 +43,7 @@ import butterknife.ButterKnife;
  */
 public class HistoryFragment extends Fragment {
 
-    private static final int DAYS_TO_LOAD = 7;
+    private static final int DAYS_TO_LOAD = 14;
 
     @BindView(R.id.recyclerViewHistory)
     RecyclerView mRecyclerViewHistory;
@@ -74,20 +77,16 @@ public class HistoryFragment extends Fragment {
         final ItemAdapter itemAdapter = new ItemAdapter();
         mRecyclerViewHistory.setAdapter(itemAdapter);
 
-        mDateTo = new Date();
-        mDateFrom = getPreviousDate(mDateTo, DAYS_TO_LOAD);
+        mDateTo = extractMaxTimeOfDate(new Date());
+        mDateFrom = extractMinTimeOfDate(getPreviousDate(mDateTo, DAYS_TO_LOAD));
         model.registerDateRange(mDateFrom, mDateTo);
 
-        model.getSummary().observe(this, data -> {
-            itemAdapter.addItems(data);
-        });
+        model.getSummary().observe(this, itemAdapter::addItems);
 
         itemAdapter.setOnLoadMoreListener(() -> {
-            itemAdapter.showLoading();
-
             // define next interval to load
-            mDateTo = mDateFrom;
-            mDateFrom = getPreviousDate(mDateTo, DAYS_TO_LOAD);
+            mDateTo = extractMaxTimeOfDate(mDateFrom);
+            mDateFrom = extractMinTimeOfDate(getPreviousDate(mDateTo, DAYS_TO_LOAD));
 
             model.registerDateRange(mDateFrom, mDateTo);
         });
@@ -101,6 +100,8 @@ public class HistoryFragment extends Fragment {
     }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.textViewDate)
+        TextView mTextViewDate;
         @BindView(R.id.textViewSteps)
         TextView mTextViewSteps;
         @BindView(R.id.textViewUsageTime)
@@ -154,6 +155,7 @@ public class HistoryFragment extends Fragment {
                             mOnLoadMoreListener.onLoadMore();
                         }
                         isLoading = true;
+                        mRecyclerViewHistory.post(() -> notifyItemInserted(getItemCount()));
                     }
                 }
             });
@@ -163,20 +165,14 @@ public class HistoryFragment extends Fragment {
             this.mOnLoadMoreListener = onLoadMoreListener;
         }
 
-        void showLoading() {
-            mSummaryMap.put(null, null);
-            notifyItemInserted(mSummaryMap.size() - 1);
-        }
-
         void addItems(@NonNull Collection<Summary> newItems) {
-            if (!mSummaryMap.isEmpty()) {
-                mSummaryMap.remove(null);
-                notifyItemRemoved(mSummaryMap.size());
+            if (isLoading) {
+                notifyItemRemoved(getItemCount());
+                isLoading = false;
             }
 
             Stream.of(newItems).forEach(item -> mSummaryMap.put(item.getTimestamp(), item));
             notifyDataSetChanged();
-            isLoading = false;
         }
 
         @NonNull
@@ -196,14 +192,26 @@ public class HistoryFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemViewHolder) {
                 Summary summary = getItemByIndex(position);
-                ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-                itemViewHolder.mTextViewSteps.setText(String.valueOf(summary.getSteps()));
-                itemViewHolder.mTextViewUsageTime.setText(String.format(
+
+                final String timestampFormatted = String.format(
+                        Locale.getDefault(),
+                        "%te. %tb %ty",
+                        summary.getTimestamp(),
+                        summary.getTimestamp(),
+                        summary.getTimestamp()
+                );
+                final String stepsFormatted = String.valueOf(summary.getSteps());
+                final String timeFormatted = String.format(
                         Locale.getDefault(),
                         "%d:%02d",
                         summary.getAppUsageTime() / 60,
                         summary.getAppUsageTime() % 60
-                ));
+                );
+
+                ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+                itemViewHolder.mTextViewDate.setText(timestampFormatted);
+                itemViewHolder.mTextViewSteps.setText(stepsFormatted);
+                itemViewHolder.mTextViewUsageTime.setText(timeFormatted);
 
                 final double emotionAvg = summary.getEmotionAvg();
                 final int emotionIndex = (int) Math.round(emotionAvg);
@@ -242,17 +250,17 @@ public class HistoryFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mSummaryMap.size();
+            return mSummaryMap.size() + (isLoading ? 1 : 0);
         }
 
         @Override
         public int getItemViewType(int position) {
-            return getItemByIndex(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+            return getItemCount() - 1 == position && isLoading ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
         }
 
         private Summary getItemByIndex(int position) {
             return Stream.of(mSummaryMap.entrySet())
-                    .sortBy(Map.Entry::getKey)
+                    .sorted((i1, i2) -> i2.getKey().compareTo(i1.getKey()))
                     .collect(Collectors.toList())
                     .get(position)
                     .getValue();
