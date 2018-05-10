@@ -9,11 +9,11 @@ At the beginning of a day, each user launches with a set amount of usage time th
 The automatic locking of apps will encourage the user to become more active and to counteract the general use of mobile phones.
 
 ## Features
-- [ ] 1. Lock social/fun apps after a certain amount of time has been spent
-- [ ] 2. Collect time for doing sportive activity (user can exchange steps for additional screen time)
-- [ ] 3. Track emotions after app usage and throughout the day (via questions/smileys)
-- [ ] 4. Configure app settings (user can set the time at which the daily stepcount reset happens)
-- [ ] 5. Aid learning (locking screen/apps for certain amount of time)
+- Lock social/fun apps after a certain amount of time has been spent
+- Collect time for doing sportive activity (user can exchange steps for additional screen time)
+- Track emotions after app usage and throughout the day (via questions/smileys)
+- Configure app settings (user can set the time at which the daily stepcount reset happens)
+- Aid learning (locking screen/apps for certain amount of time)
 
 ## Schedule
 ### Milestone 1: First prototype (Due date May 31, 2018)
