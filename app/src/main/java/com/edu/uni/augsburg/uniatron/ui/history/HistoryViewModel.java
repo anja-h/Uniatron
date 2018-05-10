@@ -36,17 +36,24 @@ public class HistoryViewModel extends AndroidViewModel {
     }
 
     /**
-     * Get the summary for the specified time range.
+     * Register to listen on changes of the summary for the specified time range.
      *
      * @param from The date to start searching.
      * @param to   The date to end searching.
-     * @return The summary.
      */
-    public LiveData<List<Summary>> getSummary(Date from, Date to) {
+    public void registerDateRange(Date from, Date to) {
         mObservableDaySummary.addSource(
                 mRepository.getSummary(from, to),
                 mObservableDaySummary::setValue
         );
+    }
+
+    /**
+     * Get the summary for the specified time range.
+     *
+     * @return The summary.
+     */
+    public LiveData<List<Summary>> getSummary() {
         return mObservableDaySummary;
     }
 }

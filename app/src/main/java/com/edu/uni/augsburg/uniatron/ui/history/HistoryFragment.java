@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,17 +16,19 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.edu.uni.augsburg.uniatron.R;
 import com.edu.uni.augsburg.uniatron.model.Emotions;
 import com.edu.uni.augsburg.uniatron.model.Summary;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,6 +66,9 @@ public class HistoryFragment extends Fragment {
 
         final LinearLayoutManager layout = new LinearLayoutManager(getContext());
         layout.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerViewHistory.addItemDecoration(
+                new DividerItemDecoration(getContext(), layout.getOrientation())
+        );
         mRecyclerViewHistory.setLayoutManager(layout);
 
         final ItemAdapter itemAdapter = new ItemAdapter();
@@ -70,9 +76,9 @@ public class HistoryFragment extends Fragment {
 
         mDateTo = new Date();
         mDateFrom = getPreviousDate(mDateTo, DAYS_TO_LOAD);
+        model.registerDateRange(mDateFrom, mDateTo);
 
-        model.getSummary(mDateFrom, mDateTo).observe(this, data -> {
-            itemAdapter.clear();
+        model.getSummary().observe(this, data -> {
             itemAdapter.addItems(data);
         });
 
@@ -83,7 +89,7 @@ public class HistoryFragment extends Fragment {
             mDateTo = mDateFrom;
             mDateFrom = getPreviousDate(mDateTo, DAYS_TO_LOAD);
 
-            model.getSummary(mDateFrom, mDateTo).observe(this, itemAdapter::addItems);
+            model.registerDateRange(mDateFrom, mDateTo);
         });
     }
 
@@ -123,7 +129,7 @@ public class HistoryFragment extends Fragment {
         private static final int VIEW_TYPE_ITEM = 0;
         private static final int VIEW_TYPE_LOADING = 1;
 
-        private final List<Summary> mSummaries = new ArrayList<>();
+        private final Map<Date, Summary> mSummaryMap = new HashMap<>();
 
         private OnLoadMoreListener mOnLoadMoreListener;
 
@@ -158,25 +164,19 @@ public class HistoryFragment extends Fragment {
         }
 
         void showLoading() {
-            mSummaries.add(null);
-            notifyItemInserted(mSummaries.size() - 1);
+            mSummaryMap.put(null, null);
+            notifyItemInserted(mSummaryMap.size() - 1);
         }
 
         void addItems(@NonNull Collection<Summary> newItems) {
-            if (!mSummaries.isEmpty()) {
-                mSummaries.remove(mSummaries.size() - 1);
-                notifyItemRemoved(mSummaries.size());
+            if (!mSummaryMap.isEmpty()) {
+                mSummaryMap.remove(null);
+                notifyItemRemoved(mSummaryMap.size());
             }
 
-            mSummaries.addAll(newItems);
+            Stream.of(newItems).forEach(item -> mSummaryMap.put(item.getTimestamp(), item));
             notifyDataSetChanged();
             isLoading = false;
-        }
-
-        void clear() {
-            final int size = mSummaries.size() - 1;
-            mSummaries.clear();
-            notifyItemRangeRemoved(0, size);
         }
 
         @NonNull
@@ -195,7 +195,7 @@ public class HistoryFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemViewHolder) {
-                Summary summary = mSummaries.get(position);
+                Summary summary = getItemByIndex(position);
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                 itemViewHolder.mTextViewSteps.setText(String.valueOf(summary.getSteps()));
                 itemViewHolder.mTextViewUsageTime.setText(String.format(
@@ -242,12 +242,20 @@ public class HistoryFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mSummaries.size();
+            return mSummaryMap.size();
         }
 
         @Override
         public int getItemViewType(int position) {
-            return mSummaries.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+            return getItemByIndex(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+        }
+
+        private Summary getItemByIndex(int position) {
+            return Stream.of(mSummaryMap.entrySet())
+                    .sortBy(Map.Entry::getKey)
+                    .collect(Collectors.toList())
+                    .get(position)
+                    .getValue();
         }
     }
 
