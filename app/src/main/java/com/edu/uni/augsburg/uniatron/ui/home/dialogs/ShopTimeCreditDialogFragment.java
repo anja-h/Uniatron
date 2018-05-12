@@ -18,8 +18,8 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.edu.uni.augsburg.uniatron.MainApplication;
 import com.edu.uni.augsburg.uniatron.R;
-import com.edu.uni.augsburg.uniatron.ui.home.HomeViewModel;
 import com.edu.uni.augsburg.uniatron.model.TimeCredits;
+import com.edu.uni.augsburg.uniatron.ui.home.HomeViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,8 @@ import butterknife.OnClick;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 /**
- * The shop dialog is a chooser for a {@link com.edu.uni.augsburg.uniatron.model.TimeCredit}.
+ * The shop dialog is a chooser for a
+ * {@link com.edu.uni.augsburg.uniatron.model.TimeCredit}.
  *
  * @author Fabio Hellmann
  */
@@ -54,31 +55,20 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.dialog_shop_time_credit, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutFrozen(true);
-        final LinearLayoutManager layout = new LinearLayoutManager(getContext());
-        layout.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(layout);
-        mRecyclerView.addItemDecoration(
-                new DividerItemDecoration(getContext(), layout.getOrientation())
-        );
-        mRecyclerView.setItemAnimator(new SlideInUpAnimator());
-        mRecyclerView.getItemAnimator().setAddDuration(ANIMATION_DURATION);
-        mRecyclerView.getItemAnimator().setChangeDuration(ANIMATION_DURATION);
-        mRecyclerView.getItemAnimator().setMoveDuration(ANIMATION_DURATION);
-        mRecyclerView.getItemAnimator().setRemoveDuration(ANIMATION_DURATION);
+        setupRecyclerView();
 
         mAdapter = new TimeCreditListAdapter();
         mRecyclerView.setAdapter(mAdapter);
@@ -97,6 +87,23 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
                 mTextViewError.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private void setupRecyclerView() {
+        final LinearLayoutManager layout = new LinearLayoutManager(getContext());
+        layout.setOrientation(LinearLayoutManager.VERTICAL);
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutFrozen(true);
+        mRecyclerView.setLayoutManager(layout);
+        mRecyclerView.addItemDecoration(
+                new DividerItemDecoration(getContext(), layout.getOrientation())
+        );
+        mRecyclerView.setItemAnimator(new SlideInUpAnimator());
+        mRecyclerView.getItemAnimator().setAddDuration(ANIMATION_DURATION);
+        mRecyclerView.getItemAnimator().setChangeDuration(ANIMATION_DURATION);
+        mRecyclerView.getItemAnimator().setMoveDuration(ANIMATION_DURATION);
+        mRecyclerView.getItemAnimator().setRemoveDuration(ANIMATION_DURATION);
     }
 
     /**
@@ -127,7 +134,7 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
      *
      * @param listener The listener.
      */
-    public void setOnBuyButtonClickedListener(OnBuyButtonClickedListener listener) {
+    public void setOnBuyButtonClickedListener(@NonNull final OnBuyButtonClickedListener listener) {
         this.mListener = listener;
     }
 
@@ -151,7 +158,8 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                             final int viewType) {
             final View view = LayoutInflater.from(getContext())
                     .inflate(R.layout.dialog_shop_time_credit_item, parent, false);
             final ViewHolder viewHolder = new ViewHolder(view);
@@ -160,7 +168,8 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ViewHolder holder,
+                                     final int position) {
             final TimeCredits timeCredits = Stream.of(TimeCredits.values())
                     .sortBy(TimeCredits::getStepCount)
                     .collect(Collectors.toList())
@@ -180,10 +189,11 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
                     .count();
         }
 
-        void setStepCount(int stepCount) {
+        void setStepCount(final int stepCount) {
             this.mStepCount = stepCount;
         }
 
+        @NonNull
         TimeCredits getSelection() {
             return Stream.of(TimeCredits.values())
                     .sortBy(TimeCredits::getStepCount)
@@ -201,10 +211,9 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
             TextView mTextViewTradeOffer;
             private int mDefaultBackgroundColor;
 
-            ViewHolder(View itemView) {
+            ViewHolder(final View itemView) {
                 super(itemView);
                 ButterKnife.bind(this, itemView);
-                mDefaultBackgroundColor = mTextViewTradeOffer.getDrawingCacheBackgroundColor();
             }
 
             @OnClick(R.id.textViewTradeOffer)
@@ -215,6 +224,8 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
 
                     mTradeButton.setEnabled(false);
                 } else {
+                    mDefaultBackgroundColor = mTextViewTradeOffer.getDrawingCacheBackgroundColor();
+
                     // reset all items to default color
                     Stream.of(viewHolders).forEach(view -> view.mTextViewTradeOffer
                             .setBackgroundColor(mDefaultBackgroundColor));

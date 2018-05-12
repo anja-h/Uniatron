@@ -19,14 +19,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * The shop dialog is a chooser for a {@link com.edu.uni.augsburg.uniatron.model.Emotions}.
+ * The shop dialog is a chooser for a
+ * {@link com.edu.uni.augsburg.uniatron.model.Emotions}.
  *
  * @author Fabio Hellmann
  */
 public class EmotionDialogFragment extends DialogFragment {
-    /**
-     * The name of this dialog.
-     */
+    /** The name of this dialog. */
     public static final String NAME = EmotionDialogFragment.class.getSimpleName();
 
     @BindView(R.id.radioGroupEmotion)
@@ -36,16 +35,17 @@ public class EmotionDialogFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.dialog_emotion, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         setAllowReturnTransitionOverlap(false);

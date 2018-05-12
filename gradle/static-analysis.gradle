@@ -25,7 +25,7 @@ staticAnalysis {
     }
     lintOptions {
         abortOnError false
-        disable 'GradleDependency'
+        disable 'GradleDependency', 'PluralsCandidate', 'UnusedResources', 'ObsoleteLintCustomCheck'
     }
 }
 

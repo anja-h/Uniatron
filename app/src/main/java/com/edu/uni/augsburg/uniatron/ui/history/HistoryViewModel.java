@@ -27,7 +27,7 @@ public class HistoryViewModel extends AndroidViewModel {
      *
      * @param application The application.
      */
-    public HistoryViewModel(@NonNull Application application) {
+    public HistoryViewModel(@NonNull final Application application) {
         super(application);
 
         mRepository = ((MainApplication) application).getRepository();
@@ -38,12 +38,12 @@ public class HistoryViewModel extends AndroidViewModel {
     /**
      * Register to listen on changes of the summary for the specified time range.
      *
-     * @param from The date to start searching.
-     * @param to   The date to end searching.
+     * @param dateFrom The date to start searching.
+     * @param dateTo   The date to end searching.
      */
-    public void registerDateRange(Date from, Date to) {
+    public void registerDateRange(@NonNull final Date dateFrom, @NonNull final Date dateTo) {
         mObservableDaySummary.addSource(
-                mRepository.getSummary(from, to),
+                mRepository.getSummary(dateFrom, dateTo),
                 mObservableDaySummary::setValue
         );
     }
@@ -53,6 +53,7 @@ public class HistoryViewModel extends AndroidViewModel {
      *
      * @return The summary.
      */
+    @NonNull
     public LiveData<List<Summary>> getSummary() {
         return mObservableDaySummary;
     }

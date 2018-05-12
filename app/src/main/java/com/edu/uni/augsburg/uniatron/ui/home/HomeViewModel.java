@@ -11,10 +11,10 @@ import com.edu.uni.augsburg.uniatron.MainApplication;
 import com.edu.uni.augsburg.uniatron.domain.DataRepository;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The {@link HomeViewModel} provides the data for the {@link HomeFragment}.
@@ -23,36 +23,36 @@ import java.util.Map;
  */
 public class HomeViewModel extends AndroidViewModel {
     private static final int MAX_COUNT = 5;
-    private final MediatorLiveData<Map<String, Double>> mObservableAppUsages;
-    private final MediatorLiveData<Integer> mObservableRemainingStepCount;
-    private final MediatorLiveData<Integer> mObservableRemainingAppUsageTime;
+    private final MediatorLiveData<Map<String, Double>> mAppUsages;
+    private final MediatorLiveData<Integer> mRemainingStepCount;
+    private final MediatorLiveData<Integer> mRemainingAppUsageTime;
 
     /**
      * Ctr.
      *
      * @param application The application.
      */
-    public HomeViewModel(@NonNull Application application) {
+    public HomeViewModel(@NonNull final Application application) {
         super(application);
 
         final DataRepository repository = ((MainApplication) application).getRepository();
 
-        mObservableAppUsages = new MediatorLiveData<>();
-        mObservableAppUsages.addSource(
+        mAppUsages = new MediatorLiveData<>();
+        mAppUsages.addSource(
                 repository.getAppUsagePercentToday(),
-                mObservableAppUsages::setValue
+                mAppUsages::setValue
         );
 
-        mObservableRemainingStepCount = new MediatorLiveData<>();
-        mObservableRemainingStepCount.addSource(
+        mRemainingStepCount = new MediatorLiveData<>();
+        mRemainingStepCount.addSource(
                 repository.getRemainingStepCountsToday(),
-                mObservableRemainingStepCount::setValue
+                mRemainingStepCount::setValue
         );
 
-        mObservableRemainingAppUsageTime = new MediatorLiveData<>();
-        mObservableRemainingAppUsageTime.addSource(
+        mRemainingAppUsageTime = new MediatorLiveData<>();
+        mRemainingAppUsageTime.addSource(
                 repository.getRemainingAppUsageTimeToday(),
-                mObservableRemainingAppUsageTime::setValue
+                mRemainingAppUsageTime::setValue
         );
     }
 
@@ -63,7 +63,7 @@ public class HomeViewModel extends AndroidViewModel {
      */
     @NonNull
     public LiveData<Map<String, Double>> getAppUsageOfTop5Apps() {
-        return Transformations.map(mObservableAppUsages, data -> extractValues(data, MAX_COUNT));
+        return Transformations.map(mAppUsages, data -> extractValues(data, MAX_COUNT));
     }
 
     /**
@@ -73,7 +73,7 @@ public class HomeViewModel extends AndroidViewModel {
      */
     @NonNull
     public LiveData<Integer> getRemainingStepCountToday() {
-        return Transformations.map(mObservableRemainingStepCount,
+        return Transformations.map(mRemainingStepCount,
                 data -> data != null && data > 0 ? data : 0);
     }
 
@@ -84,7 +84,7 @@ public class HomeViewModel extends AndroidViewModel {
      */
     @NonNull
     public LiveData<Integer> getRemainingAppUsageTime() {
-        return Transformations.map(mObservableRemainingAppUsageTime,
+        return Transformations.map(mRemainingAppUsageTime,
                 data -> data != null && data > 0 ? data : 0);
     }
 
@@ -94,14 +94,14 @@ public class HomeViewModel extends AndroidViewModel {
             return Collections.emptyMap();
         }
         // 1. Convert Map to List of Map
-        List<Map.Entry<String, Double>> list = new LinkedList<>(data.entrySet());
+        final List<Map.Entry<String, Double>> list = new LinkedList<>(data.entrySet());
 
         // 2. Sort list with Collections.sort(), provide a custom Comparator
         //    Try switch the o1 o2 position for a different order
-        Collections.sort(list, (o1, o2) -> (o1.getValue()).compareTo(o2.getValue()) * -1);
+        Collections.sort(list, (value1, value2) -> value2.getValue().compareTo(value1.getValue()));
 
         // 3. Loop the sorted list and put it into a new insertion order Map LinkedHashMap
-        Map<String, Double> sortedMap = new LinkedHashMap<>();
+        final Map<String, Double> sortedMap = new ConcurrentHashMap<>();
         for (int index = 0; index < list.size() && index < maxCount; index++) {
             final Map.Entry<String, Double> entry = list.get(index);
             sortedMap.put(entry.getKey(), entry.getValue());

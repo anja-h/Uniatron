@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.annimon.stream.Stream;
 import com.edu.uni.augsburg.uniatron.R;
 import com.edu.uni.augsburg.uniatron.ui.home.dialogs.EmotionDialogFragment;
 import com.edu.uni.augsburg.uniatron.ui.home.dialogs.ShopTimeCreditDialogFragment;
@@ -23,7 +24,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,53 +45,34 @@ public class HomeFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAppUsagePieChart.setUsePercentValues(true);
-        mAppUsagePieChart.getDescription().setEnabled(false);
-        mAppUsagePieChart.setDrawHoleEnabled(true);
-        mAppUsagePieChart.setDrawCenterText(true);
-        mAppUsagePieChart.setClickable(false);
-        mAppUsagePieChart.setRotationEnabled(false);
-        mAppUsagePieChart.setHardwareAccelerationEnabled(true);
-        mAppUsagePieChart.getLegend().setEnabled(false);
-        mAppUsagePieChart.setHighlightPerTapEnabled(false);
-        mAppUsagePieChart.setNoDataText(getString(R.string.home_chart_no_data));
-        mAppUsagePieChart.setCenterTextColor(getResources().getColor(R.color.secondaryTextColor));
-        mAppUsagePieChart.setCenterTextSize(getResources().getDimension(R.dimen.chart_title_text_size));
-        mAppUsagePieChart.setEntryLabelTextSize(getResources().getDimension(R.dimen.chart_value_text_size));
-        mAppUsagePieChart.setEntryLabelColor(getResources().getColor(R.color.primaryTextColor));
-
-        final PieDataSet pieDataSet = new PieDataSet(new ArrayList<>(), "");
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        final PieData pieData = new PieData(pieDataSet);
-        pieData.setValueFormatter(new PercentFormatter());
-        pieData.setValueTextSize(getResources().getDimension(R.dimen.chart_value_text_size));
-        pieData.setValueTextColor(getResources().getColor(R.color.primaryTextColor));
-        mAppUsagePieChart.setData(pieData);
+        final PieDataSet pieDataSet = setupChart();
 
         final HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
         homeViewModel.getAppUsageOfTop5Apps().observe(this, item -> {
             pieDataSet.clear();
-            if (!item.isEmpty()) {
-                float value = 0;
-                for (Map.Entry<String, Double> entry : item.entrySet()) {
-                    value += entry.getValue().floatValue();
-                    pieDataSet.addEntry(
-                            new PieEntry(entry.getValue().floatValue(), entry.getKey())
-                    );
-                }
+            if (item != null && !item.isEmpty()) {
+                final float value = (float) Stream.of(item.values())
+                        .mapToDouble(dValue -> dValue)
+                        .sum();
+
+                Stream.of(item.entrySet())
+                        .map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey()))
+                        .forEach(pieDataSet::addEntry);
+                
                 pieDataSet.addEntry(new PieEntry(1 - value, getString(R.string.app_others)));
             }
             mAppUsagePieChart.animateY(ANIMATION_DURATION_LENGTH, Easing.EasingOption.EaseInQuad);
@@ -108,6 +89,36 @@ public class HomeFragment extends Fragment {
         homeViewModel.getRemainingStepCountToday().observe(this, stepCount -> {
             mStepButton.setText(String.valueOf(stepCount));
         });
+    }
+
+    @NonNull
+    private PieDataSet setupChart() {
+        mAppUsagePieChart.setUsePercentValues(true);
+        mAppUsagePieChart.getDescription().setEnabled(false);
+        mAppUsagePieChart.setDrawHoleEnabled(true);
+        mAppUsagePieChart.setDrawCenterText(true);
+        mAppUsagePieChart.setClickable(false);
+        mAppUsagePieChart.setRotationEnabled(false);
+        mAppUsagePieChart.setHardwareAccelerationEnabled(true);
+        mAppUsagePieChart.getLegend().setEnabled(false);
+        mAppUsagePieChart.setHighlightPerTapEnabled(false);
+        mAppUsagePieChart.setNoDataText(getString(R.string.home_chart_no_data));
+        mAppUsagePieChart.setCenterTextColor(getResources().getColor(R.color.secondaryTextColor));
+        mAppUsagePieChart.setCenterTextSize(getResources()
+                .getDimension(R.dimen.chart_title_text_size));
+        mAppUsagePieChart.setEntryLabelTextSize(getResources()
+                .getDimension(R.dimen.chart_value_text_size));
+        mAppUsagePieChart.setEntryLabelColor(getResources().getColor(R.color.primaryTextColor));
+
+        final PieDataSet pieDataSet = new PieDataSet(new ArrayList<>(), "");
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        final PieData pieData = new PieData(pieDataSet);
+        pieData.setValueFormatter(new PercentFormatter());
+        pieData.setValueTextSize(getResources().getDimension(R.dimen.chart_value_text_size));
+        pieData.setValueTextColor(getResources().getColor(R.color.primaryTextColor));
+        mAppUsagePieChart.setData(pieData);
+
+        return pieDataSet;
     }
 
     /**

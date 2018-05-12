@@ -1,6 +1,7 @@
 package com.edu.uni.augsburg.uniatron.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,7 +25,7 @@ import butterknife.ButterKnife;
  *
  * @author Fabio Hellmann
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private static final int NAV_POSITION_HISTORY = 0;
     private static final int NAV_POSITION_HOME = 1;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView mNavigation;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -48,30 +49,8 @@ public class MainActivity extends AppCompatActivity {
         final ScreenSlidePagerAdapter mScreenSlideAdapter =
                 new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mScreenSlideAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+        mViewPager.addOnPageChangeListener(this);
 
-            @Override
-            public void onPageSelected(int position) {
-                switch (position) {
-                    case NAV_POSITION_HISTORY:
-                        mNavigation.setSelectedItemId(R.id.navigation_history);
-                        break;
-                    case NAV_POSITION_HOME:
-                        mNavigation.setSelectedItemId(R.id.navigation_home);
-                        break;
-                    case NAV_POSITION_SETTING:
-                        mNavigation.setSelectedItemId(R.id.navigation_settings);
-                        break;
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
         mNavigation.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
@@ -83,18 +62,47 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_settings:
                     mViewPager.setCurrentItem(NAV_POSITION_SETTING);
                     return true;
+                default:
+                    return false;
             }
-            return false;
         });
-
         mNavigation.setSelectedItemId(R.id.navigation_home);
+    }
+
+    @Override
+    public void onPageScrolled(final int position,
+                               final float positionOffset,
+                               final int positionOffsetPixels) {
+        // can be ignored
+    }
+
+    @Override
+    public void onPageSelected(final int position) {
+        switch (position) {
+            case NAV_POSITION_HISTORY:
+                mNavigation.setSelectedItemId(R.id.navigation_history);
+                break;
+            case NAV_POSITION_SETTING:
+                mNavigation.setSelectedItemId(R.id.navigation_settings);
+                break;
+            case NAV_POSITION_HOME:
+            default:
+                mNavigation.setSelectedItemId(R.id.navigation_home);
+                break;
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(final int state) {
+        // can be ignored
     }
 
     @Override
     public void onBackPressed() {
         if (mViewPager.getCurrentItem() == NAV_POSITION_HOME) {
-            // If the user is currently looking at the home screen, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
+            // If the user is currently looking at the home screen,
+            // allow the system to handle the Back button. This
+            // calls finish() on this activity and pops the back stack.
             super.onBackPressed();
         } else {
             // Otherwise, select the home screen.
@@ -102,11 +110,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private final class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    static final class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         private final Map<Integer, Fragment> mFragments;
 
-        ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
+        ScreenSlidePagerAdapter(@NonNull final FragmentManager fragmentManager) {
+            super(fragmentManager);
             mFragments = new LinkedHashMap<>();
             mFragments.put(NAV_POSITION_HISTORY, new HistoryFragment());
             mFragments.put(NAV_POSITION_HOME, new HomeFragment());
@@ -114,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(final int position) {
             return mFragments.get(position);
         }
 

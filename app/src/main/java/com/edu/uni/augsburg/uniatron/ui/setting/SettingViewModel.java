@@ -24,17 +24,17 @@ import java.util.Set;
  * @author Fabio Hellmann
  */
 public class SettingViewModel extends AndroidViewModel {
-    private final MutableLiveData<Set<String>> mObservableInstalledApps;
+    private final MutableLiveData<Set<String>> mInstalledApps;
 
     /**
      * Ctr.
      *
      * @param application The application.
      */
-    public SettingViewModel(@NonNull Application application) {
+    public SettingViewModel(@NonNull final Application application) {
         super(application);
 
-        mObservableInstalledApps = new MutableLiveData<>();
+        mInstalledApps = new MutableLiveData<>();
     }
 
     /**
@@ -45,25 +45,25 @@ public class SettingViewModel extends AndroidViewModel {
      */
     @NonNull
     public LiveData<Set<String>> getInstalledApps(@NonNull final Context context) {
-        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
         final PackageManager packageManager = context.getPackageManager();
         final List<ApplicationInfo> installedApplications = packageManager
                 .getInstalledApplications(PackageManager.GET_META_DATA);
 
-        final String uniatronApp = context.getApplicationInfo()
-                .loadLabel(packageManager).toString();
-
         if (installedApplications != null) {
             final Set<String> result = Stream.of(installedApplications)
-                    .map(ai -> packageManager.getApplicationLabel(ai).toString())
-                    .filter(ai -> !ai.equals(uniatronApp))
+                    .map(item -> packageManager.getApplicationLabel(item).toString())
+                    .filter(item -> !item.equals(
+                            context.getApplicationInfo().loadLabel(packageManager).toString()
+                    ))
                     .collect(Collectors.toSet());
-            mObservableInstalledApps.setValue(result);
+
+            mInstalledApps.setValue(result);
         }
 
-        return Transformations.map(mObservableInstalledApps,
-                data -> data != null ? data : Collections.emptySet());
+        return Transformations.map(mInstalledApps,
+                data -> data == null ? Collections.emptySet() : data);
     }
 }

@@ -1,6 +1,7 @@
 package com.edu.uni.augsburg.uniatron.ui.history;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,9 +27,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +45,7 @@ import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMinTimeO
  */
 public class HistoryFragment extends Fragment {
 
-    private static final int DAYS_TO_LOAD = 14;
+    private static final int DAYS_TO_LOAD = 7;
     private static final int ANIMATION_DURATION = 500;
 
     @BindView(R.id.recyclerViewHistory)
@@ -55,16 +56,17 @@ public class HistoryFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         final HistoryViewModel model = ViewModelProviders.of(this).get(HistoryViewModel.class);
@@ -81,7 +83,7 @@ public class HistoryFragment extends Fragment {
         mRecyclerViewHistory.getItemAnimator().setMoveDuration(ANIMATION_DURATION);
         mRecyclerViewHistory.getItemAnimator().setRemoveDuration(ANIMATION_DURATION);
 
-        final ItemAdapter itemAdapter = new ItemAdapter();
+        final ItemAdapter itemAdapter = new ItemAdapter(mRecyclerViewHistory);
         mRecyclerViewHistory.setAdapter(itemAdapter);
 
         mDateTo = extractMaxTimeOfDate(new Date());
@@ -99,14 +101,19 @@ public class HistoryFragment extends Fragment {
         });
     }
 
-    private Date getPreviousDate(Date date, int days) {
+    private static Date getPreviousDate(final Date date, final int days) {
         final Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.DATE, -days);
         return calendar.getTime();
     }
 
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
+    /**
+     * The view holder for the item view.
+     *
+     * @author Fabio Hellmann
+     */
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.textViewDate)
         TextView mTextViewDate;
         @BindView(R.id.textViewSteps)
@@ -116,63 +123,73 @@ public class HistoryFragment extends Fragment {
         @BindView(R.id.imageViewEmoticon)
         ImageView mImageViewEmoticon;
 
-        ItemViewHolder(View itemView) {
+        ItemViewHolder(@NonNull final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
 
-    static class LoadingViewHolder extends RecyclerView.ViewHolder {
+    /**
+     * The view holder for the loading view.
+     *
+     * @author Fabio Hellmann
+     */
+    public static class LoadingViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.progressBar)
         ProgressBar mProgressBar;
 
-        LoadingViewHolder(View itemView) {
+        LoadingViewHolder(@NonNull final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
 
-    final class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private static final int VIEW_TYPE_ITEM = 0;
         private static final int VIEW_TYPE_LOADING = 1;
 
-        private final Map<Date, Summary> mSummaryMap = new HashMap<>();
+        private final Map<Date, Summary> mSummaryMap = new ConcurrentHashMap<>();
+        private final Context mContext;
 
         private OnLoadMoreListener mOnLoadMoreListener;
 
         private boolean isLoading;
-        private int visibleThreshold = 5;
+        private static final int VISIBLE_THRESHOLD = 5;
         private int lastVisibleItem, totalItemCount;
 
-        ItemAdapter() {
+        ItemAdapter(@NonNull final RecyclerView recyclerView) {
+            super();
+            mContext = recyclerView.getContext();
             final LinearLayoutManager linearLayoutManager =
-                    (LinearLayoutManager) mRecyclerViewHistory.getLayoutManager();
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            mRecyclerViewHistory.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
+                public void onScrolled(final RecyclerView recyclerView,
+                                       final int dScrollX,
+                                       final int dScrollY) {
+                    super.onScrolled(recyclerView, dScrollX, dScrollY);
 
                     totalItemCount = linearLayoutManager.getItemCount();
                     lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
-                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    if (!isLoading && totalItemCount <= (lastVisibleItem + VISIBLE_THRESHOLD)) {
                         if (mOnLoadMoreListener != null) {
                             mOnLoadMoreListener.onLoadMore();
                         }
                         isLoading = true;
-                        mRecyclerViewHistory.post(() -> notifyItemInserted(getItemCount()));
+                        recyclerView.post(() -> notifyItemInserted(getItemCount()));
                     }
                 }
             });
         }
 
-        void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        private void setOnLoadMoreListener(@NonNull final OnLoadMoreListener onLoadMoreListener) {
             this.mOnLoadMoreListener = onLoadMoreListener;
         }
 
-        void addItems(@NonNull Collection<Summary> newItems) {
+        private void addItems(@NonNull final Collection<Summary> newItems) {
             if (isLoading) {
                 notifyItemRemoved(getItemCount());
                 isLoading = false;
@@ -184,21 +201,23 @@ public class HistoryFragment extends Fragment {
 
         @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                          final int viewType) {
             if (viewType == VIEW_TYPE_LOADING) {
-                View view = LayoutInflater.from(getContext())
+                final View view = LayoutInflater.from(mContext)
                         .inflate(R.layout.fragment_history_loading, parent, false);
                 return new LoadingViewHolder(view);
             }
-            View view = LayoutInflater.from(getContext())
+            final View view = LayoutInflater.from(mContext)
                     .inflate(R.layout.fragment_history_item, parent, false);
             return new ItemViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder,
+                                     final int position) {
             if (holder instanceof ItemViewHolder) {
-                Summary summary = getItemByIndex(position);
+                final Summary summary = getItemByIndex(position);
 
                 final String timestampFormatted = String.format(
                         Locale.getDefault(),
@@ -215,7 +234,7 @@ public class HistoryFragment extends Fragment {
                         summary.getAppUsageTime() % 60
                 );
 
-                ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+                final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                 itemViewHolder.mTextViewDate.setText(timestampFormatted);
                 itemViewHolder.mTextViewSteps.setText(stepsFormatted);
                 itemViewHolder.mTextViewUsageTime.setText(timeFormatted);
@@ -224,34 +243,32 @@ public class HistoryFragment extends Fragment {
                 final int emotionIndex = (int) Math.round(emotionAvg);
                 final Emotions emotion = Emotions.values()[emotionIndex];
 
-                final Drawable drawable;
-                switch (emotion) {
-                    case ANGRY:
-                        drawable = getResources()
-                                .getDrawable(R.drawable.ic_emoticon_angry_selected);
-                        break;
-                    case SADNESS:
-                        drawable = getResources()
-                                .getDrawable(R.drawable.ic_emoticon_sad_selected);
-                        break;
-                    case HAPPINESS:
-                        drawable = getResources()
-                                .getDrawable(R.drawable.ic_emoticon_happy_selected);
-                        break;
-                    case FANTASTIC:
-                        drawable = getResources()
-                                .getDrawable(R.drawable.ic_emoticon_fantastic_selected);
-                        break;
-                    case NEUTRAL:
-                    default:
-                        drawable = getResources()
-                                .getDrawable(R.drawable.ic_emoticon_neutral_selected);
-                        break;
-                }
+                final Drawable drawable = getEmoticonDrawable(emotion);
                 itemViewHolder.mImageViewEmoticon.setImageDrawable(drawable);
             } else if (holder instanceof LoadingViewHolder) {
-                LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+                final LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
                 loadingViewHolder.mProgressBar.setIndeterminate(true);
+            }
+        }
+
+        private Drawable getEmoticonDrawable(@NonNull final Emotions emotion) {
+            switch (emotion) {
+                case ANGRY:
+                    return mContext.getResources()
+                            .getDrawable(R.drawable.ic_emoticon_angry_selected);
+                case SADNESS:
+                    return mContext.getResources()
+                            .getDrawable(R.drawable.ic_emoticon_sad_selected);
+                case HAPPINESS:
+                    return mContext.getResources()
+                            .getDrawable(R.drawable.ic_emoticon_happy_selected);
+                case FANTASTIC:
+                    return mContext.getResources()
+                            .getDrawable(R.drawable.ic_emoticon_fantastic_selected);
+                case NEUTRAL:
+                default:
+                    return mContext.getResources()
+                            .getDrawable(R.drawable.ic_emoticon_neutral_selected);
             }
         }
 
@@ -261,13 +278,13 @@ public class HistoryFragment extends Fragment {
         }
 
         @Override
-        public int getItemViewType(int position) {
+        public int getItemViewType(final int position) {
             return getItemCount() - 1 == position && isLoading ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
         }
 
-        private Summary getItemByIndex(int position) {
+        private Summary getItemByIndex(final int position) {
             return Stream.of(mSummaryMap.entrySet())
-                    .sorted((i1, i2) -> i2.getKey().compareTo(i1.getKey()))
+                    .sorted((item1, item2) -> item2.getKey().compareTo(item1.getKey()))
                     .collect(Collectors.toList())
                     .get(position)
                     .getValue();

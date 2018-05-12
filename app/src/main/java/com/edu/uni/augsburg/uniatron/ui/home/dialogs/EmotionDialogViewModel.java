@@ -24,7 +24,7 @@ public class EmotionDialogViewModel extends AndroidViewModel {
      *
      * @param application The application.
      */
-    public EmotionDialogViewModel(@NonNull Application application) {
+    public EmotionDialogViewModel(@NonNull final Application application) {
         super(application);
 
         mRepository = ((MainApplication) application).getRepository();
@@ -36,6 +36,7 @@ public class EmotionDialogViewModel extends AndroidViewModel {
      * @param emotion The emotion.
      * @return The added emotion.
      */
+    @NonNull
     public LiveData<Emotion> addEmotion(@NonNull final Emotions emotion) {
         return mRepository.addEmotion(emotion);
     }
