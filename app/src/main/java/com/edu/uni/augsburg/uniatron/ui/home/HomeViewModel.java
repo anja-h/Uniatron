@@ -22,7 +22,7 @@ import java.util.Map;
  * @author Fabio Hellmann
  */
 public class HomeViewModel extends AndroidViewModel {
-    private static final int MAX_COUNT = 3;
+    private static final int MAX_COUNT = 5;
     private final MediatorLiveData<Map<String, Double>> mObservableAppUsages;
     private final MediatorLiveData<Integer> mObservableRemainingStepCount;
     private final MediatorLiveData<Integer> mObservableRemainingAppUsageTime;
@@ -62,7 +62,7 @@ public class HomeViewModel extends AndroidViewModel {
      * @return The app usage.
      */
     @NonNull
-    public LiveData<Map<String, Double>> getAppUsageOfTop3Apps() {
+    public LiveData<Map<String, Double>> getAppUsageOfTop5Apps() {
         return Transformations.map(mObservableAppUsages, data -> extractValues(data, MAX_COUNT));
     }
 

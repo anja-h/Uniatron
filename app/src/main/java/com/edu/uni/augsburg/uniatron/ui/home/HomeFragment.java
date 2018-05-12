@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
         mAppUsagePieChart.getLegend().setEnabled(false);
         mAppUsagePieChart.setHighlightPerTapEnabled(false);
         mAppUsagePieChart.setNoDataText(getString(R.string.home_chart_no_data));
-        mAppUsagePieChart.setCenterTextColor(getResources().getColor(R.color.primaryTextColor));
+        mAppUsagePieChart.setCenterTextColor(getResources().getColor(R.color.secondaryTextColor));
         mAppUsagePieChart.setCenterTextSize(getResources().getDimension(R.dimen.chart_title_text_size));
         mAppUsagePieChart.setEntryLabelTextSize(getResources().getDimension(R.dimen.chart_value_text_size));
         mAppUsagePieChart.setEntryLabelColor(getResources().getColor(R.color.primaryTextColor));
@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment {
 
         final HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
-        homeViewModel.getAppUsageOfTop3Apps().observe(this, item -> {
+        homeViewModel.getAppUsageOfTop5Apps().observe(this, item -> {
             pieDataSet.clear();
             if (!item.isEmpty()) {
                 float value = 0;

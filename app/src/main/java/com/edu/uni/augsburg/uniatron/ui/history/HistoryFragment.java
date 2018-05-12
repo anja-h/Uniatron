@@ -32,6 +32,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMaxTimeOfDate;
 import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMinTimeOfDate;
@@ -44,6 +45,7 @@ import static com.edu.uni.augsburg.uniatron.domain.util.DateUtil.extractMinTimeO
 public class HistoryFragment extends Fragment {
 
     private static final int DAYS_TO_LOAD = 14;
+    private static final int ANIMATION_DURATION = 500;
 
     @BindView(R.id.recyclerViewHistory)
     RecyclerView mRecyclerViewHistory;
@@ -73,6 +75,11 @@ public class HistoryFragment extends Fragment {
                 new DividerItemDecoration(getContext(), layout.getOrientation())
         );
         mRecyclerViewHistory.setLayoutManager(layout);
+        mRecyclerViewHistory.setItemAnimator(new SlideInLeftAnimator());
+        mRecyclerViewHistory.getItemAnimator().setAddDuration(ANIMATION_DURATION);
+        mRecyclerViewHistory.getItemAnimator().setChangeDuration(ANIMATION_DURATION);
+        mRecyclerViewHistory.getItemAnimator().setMoveDuration(ANIMATION_DURATION);
+        mRecyclerViewHistory.getItemAnimator().setRemoveDuration(ANIMATION_DURATION);
 
         final ItemAdapter itemAdapter = new ItemAdapter();
         mRecyclerViewHistory.setAdapter(itemAdapter);

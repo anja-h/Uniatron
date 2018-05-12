@@ -27,6 +27,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 /**
  * The shop dialog is a chooser for a {@link com.edu.uni.augsburg.uniatron.model.TimeCredit}.
@@ -38,6 +39,8 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
      * The name of this dialog.
      */
     public static final String NAME = ShopTimeCreditDialogFragment.class.getSimpleName();
+
+    private static final int ANIMATION_DURATION = 500;
 
     @BindView(R.id.textViewError)
     TextView mTextViewError;
@@ -71,6 +74,12 @@ public class ShopTimeCreditDialogFragment extends DialogFragment {
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(getContext(), layout.getOrientation())
         );
+        mRecyclerView.setItemAnimator(new SlideInUpAnimator());
+        mRecyclerView.getItemAnimator().setAddDuration(ANIMATION_DURATION);
+        mRecyclerView.getItemAnimator().setChangeDuration(ANIMATION_DURATION);
+        mRecyclerView.getItemAnimator().setMoveDuration(ANIMATION_DURATION);
+        mRecyclerView.getItemAnimator().setRemoveDuration(ANIMATION_DURATION);
+
         mAdapter = new TimeCreditListAdapter();
         mRecyclerView.setAdapter(mAdapter);
 

@@ -14,7 +14,7 @@
         android:paddingBottom="@dimen/dialog_vertical_margin"
         android:paddingTop="@dimen/dialog_vertical_margin"
         android:gravity="center_vertical|center_horizontal"
-        android:drawableStart="@drawable/ic_directions_walk_black_24dp"
+        android:drawableStart="@drawable/ic_shop_black_24dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         style="@style/Widget.AppCompat.Button.Borderless"
         tools:text="TextView" />

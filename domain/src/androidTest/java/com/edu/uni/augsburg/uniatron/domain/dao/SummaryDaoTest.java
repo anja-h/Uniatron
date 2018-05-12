@@ -8,10 +8,9 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.edu.uni.augsburg.uniatron.domain.AppDatabase;
+import com.edu.uni.augsburg.uniatron.domain.DatabaseUtil;
 import com.edu.uni.augsburg.uniatron.domain.model.SummaryEntity;
-import com.edu.uni.augsburg.uniatron.domain.util.TestUtils;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,7 +24,7 @@ import java.util.List;
 import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getLiveDataValue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class SummaryDaoTest {
@@ -62,6 +61,7 @@ public class SummaryDaoTest {
 
     @Test
     public void getSummaries() throws InterruptedException {
+        DatabaseUtil.createRandomData(mDb);
 
         final Date date = new Date();
 
@@ -69,6 +69,6 @@ public class SummaryDaoTest {
 
         final List<SummaryEntity> liveDataValue = getLiveDataValue(summaries);
         assertThat(liveDataValue, is(notNullValue()));
-        assertThat(liveDataValue.isEmpty(), is(true));
+        assertThat(liveDataValue.isEmpty(), is(false));
     }
 }

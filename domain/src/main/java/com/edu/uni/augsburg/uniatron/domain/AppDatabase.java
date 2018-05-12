@@ -61,5 +61,22 @@ public abstract class AppDatabase extends RoomDatabase {
      */
     public abstract EmotionDao emotionDao();
 
+    /**
+     * Get the summary dao.
+     *
+     * @return the summary dao.
+     */
     public abstract SummaryDao summaryDao();
+
+    /**
+     * Create the database.
+     *
+     * @param context The app context.
+     * @return the database.
+     */
+    public static AppDatabase create(@NonNull final Context context) {
+        return Room.databaseBuilder(context, AppDatabase.class, "uniatron")
+                //.addMigrations() -> For the future
+                .build();
+    }
 }

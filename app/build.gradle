@@ -50,6 +50,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.shuhart.stepview:stepview:1.2.6'
     implementation 'com.annimon:stream:1.2.0'
+    implementation 'jp.wasabeef:recyclerview-animators:2.3.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
@@ -57,4 +58,3 @@ dependencies {
 }
 
 apply from: rootProject.file('gradle/static-analysis.gradle')
-//apply from: rootProject.file('gradle/coverage.gradle')
