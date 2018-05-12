@@ -6,7 +6,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.TypeConverters;
 
-import com.edu.uni.augsburg.uniatron.domain.converter.DateConverter;
+import com.edu.uni.augsburg.uniatron.domain.converter.DateConverterUtil;
 import com.edu.uni.augsburg.uniatron.domain.model.AppUsageEntity;
 
 import java.util.Date;
@@ -20,7 +20,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
  * @author Fabio Hellmann
  */
 @Dao
-@TypeConverters({DateConverter.class})
+@TypeConverters({DateConverterUtil.class})
 public interface AppUsageDao {
     /**
      * Persist an app usage.
@@ -63,24 +63,13 @@ public interface AppUsageDao {
     LiveData<List<AppUsageEntity>> loadAppUsagePercent(Date dateFrom, Date dateTo);
 
     /**
-     * Load the app usage time of each app summed by the app name.
-     *
-     * @param dateFrom The date to start searching.
-     * @param dateTo The date to end searching.
-     * @return The app usage time by app.
-     */
-    @Query("SELECT TOTAL(usage_time_in_seconds) FROM AppUsageEntity "
-            + "WHERE timestamp BETWEEN :dateFrom AND :dateTo")
-    LiveData<Integer> loadAppUsageTimeSum(Date dateFrom, Date dateTo);
-
-    /**
      * Load the remaining app usage time.
      *
      * @param dateFrom The date to start searching.
      * @param dateTo The date to end searching.
      * @return The remaining app usage time.
      */
-    @Query("SELECT (SELECT TOTAL(time_in_minutes * 60) FROM TimeCreditEntity "
+    @Query("SELECT (SELECT TOTAL(usage_time_in_seconds * 60) FROM TimeCreditEntity "
             + "WHERE timestamp BETWEEN :dateFrom AND :dateTo) - TOTAL(usage_time_in_seconds) "
             + "FROM AppUsageEntity WHERE timestamp BETWEEN :dateFrom AND :dateTo")
     LiveData<Integer> loadRemainingAppUsageTime(Date dateFrom, Date dateTo);

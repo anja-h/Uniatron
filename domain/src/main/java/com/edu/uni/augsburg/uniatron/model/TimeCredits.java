@@ -25,12 +25,12 @@ public enum TimeCredits {
     /** The time credit for 100 steps. */
     CREDIT_100(100, 1);
 
-    private final int stepCount;
-    private final int timeInMinutes;
+    private final int mStepCount;
+    private final int mTime;
 
-    TimeCredits(int stepCount, int timeInMinutes) {
-        this.stepCount = stepCount;
-        this.timeInMinutes = timeInMinutes;
+    TimeCredits(final int stepCount, final int time) {
+        this.mStepCount = stepCount;
+        this.mTime = time;
     }
 
     /**
@@ -39,7 +39,7 @@ public enum TimeCredits {
      * @return The step count.
      */
     public int getStepCount() {
-        return stepCount;
+        return mStepCount;
     }
 
     /**
@@ -48,18 +48,18 @@ public enum TimeCredits {
      * @return The time.
      */
     public int getTimeInMinutes() {
-        return timeInMinutes;
+        return mTime;
     }
 
     /**
      * Checks whether this time credit is usable with the
      * specified amount of remaining steps.
      *
-     * @param remainingStepCount The remaining step count.
+     * @param availableSteps The available amount of steps.
      * @return <code>true</code> if this time credit is usable,
      * <code>false</code> otherwise.
      */
-    public boolean isUsable(final int remainingStepCount) {
-        return remainingStepCount >= stepCount;
+    public boolean isUsable(final int availableSteps) {
+        return availableSteps >= mStepCount;
     }
 }

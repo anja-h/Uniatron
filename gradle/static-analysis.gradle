@@ -1,7 +1,7 @@
 apply plugin: 'com.novoda.static-analysis'
 
 staticAnalysis {
-    penalty failOnErrors
+    penalty failOnWarnings
     checkstyle {
         toolVersion '8.8'
         exclude project.fileTree('src/test/java')
@@ -23,7 +23,10 @@ staticAnalysis {
         excludeFilter rootProject.file('tools/findbugs.xml')
         includeVariants { variant -> variant.name.contains('debug') }
     }
-    lint { }
+    lintOptions {
+        abortOnError false
+        disable 'GradleDependency'
+    }
 }
 
 afterEvaluate {

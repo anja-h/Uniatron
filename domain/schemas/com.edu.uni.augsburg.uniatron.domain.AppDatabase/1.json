@@ -59,7 +59,7 @@
             "notNull": false
           },
           {
-            "fieldPath": "mUsageTimeInSeconds",
+            "fieldPath": "mTime",
             "columnName": "usage_time_in_seconds",
             "affinity": "INTEGER",
             "notNull": true
@@ -100,7 +100,7 @@
             "notNull": false
           },
           {
-            "fieldPath": "mTimeInMinutes",
+            "fieldPath": "mTime",
             "columnName": "time_in_minutes",
             "affinity": "INTEGER",
             "notNull": true

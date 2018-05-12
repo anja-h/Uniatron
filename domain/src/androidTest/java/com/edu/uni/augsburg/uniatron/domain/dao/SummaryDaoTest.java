@@ -18,7 +18,9 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.edu.uni.augsburg.uniatron.domain.util.TestUtils.getLiveDataValue;
@@ -65,7 +67,10 @@ public class SummaryDaoTest {
 
         final Date date = new Date();
 
-        final LiveData<List<SummaryEntity>> summaries = mDao.getSummaries(date, date);
+        final Calendar calendar = GregorianCalendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+
+        final LiveData<List<SummaryEntity>> summaries = mDao.getSummaries(calendar.getTime(), date);
 
         final List<SummaryEntity> liveDataValue = getLiveDataValue(summaries);
         assertThat(liveDataValue, is(notNullValue()));

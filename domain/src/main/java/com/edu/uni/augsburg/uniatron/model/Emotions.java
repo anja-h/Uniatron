@@ -6,14 +6,14 @@ package com.edu.uni.augsburg.uniatron.model;
  * @author Fabio Hellmann
  */
 public enum Emotions {
-    /** The emotion state ANGRY **/
+    /** The emotion state ANGRY. **/
     ANGRY,
-    /** The emotion state SADNESS **/
+    /** The emotion state SADNESS. **/
     SADNESS,
-    /** The emotion state NEUTRAL **/
+    /** The emotion state NEUTRAL. **/
     NEUTRAL,
-    /** The emotion state HAPPINESS **/
+    /** The emotion state HAPPINESS. **/
     HAPPINESS,
-    /** The emotion state FANTASTIC **/
+    /** The emotion state FANTASTIC. **/
     FANTASTIC
 }

@@ -78,7 +78,7 @@ public class StepCountDaoTest {
         TimeCreditEntity entry = new TimeCreditEntity();
         entry.setStepCount(count);
         entry.setTimestamp(date);
-        entry.setTimeInMinutes(2);
+        entry.setTime(2);
         mDaoCredit.add(entry);
 
         final LiveData<Integer> data = mDao
@@ -98,7 +98,7 @@ public class StepCountDaoTest {
         TimeCreditEntity entry = new TimeCreditEntity();
         entry.setStepCount(count);
         entry.setTimestamp(date);
-        entry.setTimeInMinutes(2);
+        entry.setTime(2);
         mDaoCredit.add(entry);
 
         final LiveData<Integer> data = mDao

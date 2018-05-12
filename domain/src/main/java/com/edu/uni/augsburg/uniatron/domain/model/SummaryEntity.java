@@ -4,6 +4,11 @@ import com.edu.uni.augsburg.uniatron.model.Summary;
 
 import java.util.Date;
 
+/**
+ * A small model for summary to bundle the necessary information.
+ *
+ * @author Fabio Hellmann
+ */
 public class SummaryEntity implements Summary {
     private Date mTimestamp;
     private long mAppUsageTime;
@@ -11,18 +16,18 @@ public class SummaryEntity implements Summary {
     private double mEmotionAvg;
 
     public Date getTimestamp() {
-        return mTimestamp;
+        return (Date) mTimestamp.clone();
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.mTimestamp = timestamp;
+    public void setTimestamp(final Date timestamp) {
+        this.mTimestamp = (Date) timestamp.clone();
     }
 
     public long getAppUsageTime() {
         return mAppUsageTime;
     }
 
-    public void setAppUsageTime(long appUsageTime) {
+    public void setAppUsageTime(final long appUsageTime) {
         this.mAppUsageTime = appUsageTime;
     }
 
@@ -30,7 +35,7 @@ public class SummaryEntity implements Summary {
         return mSteps;
     }
 
-    public void setSteps(long steps) {
+    public void setSteps(final long steps) {
         this.mSteps = steps;
     }
 
@@ -38,7 +43,7 @@ public class SummaryEntity implements Summary {
         return mEmotionAvg;
     }
 
-    public void setEmotionAvg(double emotionAvg) {
+    public void setEmotionAvg(final double emotionAvg) {
         this.mEmotionAvg = emotionAvg;
     }
 }

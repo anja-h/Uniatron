@@ -5,8 +5,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
-import com.edu.uni.augsburg.uniatron.domain.converter.DateConverter;
-import com.edu.uni.augsburg.uniatron.domain.converter.EmotionConverter;
+import com.edu.uni.augsburg.uniatron.domain.converter.DateConverterUtil;
+import com.edu.uni.augsburg.uniatron.domain.converter.EmotionConverterUtil;
 import com.edu.uni.augsburg.uniatron.model.Emotion;
 import com.edu.uni.augsburg.uniatron.model.Emotions;
 
@@ -18,7 +18,7 @@ import java.util.Date;
  * @author Fabio Hellmann
  */
 @Entity
-@TypeConverters({DateConverter.class, EmotionConverter.class})
+@TypeConverters({DateConverterUtil.class, EmotionConverterUtil.class})
 public class EmotionEntity implements Emotion {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -32,23 +32,23 @@ public class EmotionEntity implements Emotion {
         return mId;
     }
 
-    public void setId(long id) {
-        this.mId = id;
+    public void setId(final long identifier) {
+        this.mId = identifier;
     }
 
     public Date getTimestamp() {
-        return mTimestamp;
+        return (Date) mTimestamp.clone();
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.mTimestamp = timestamp;
+    public void setTimestamp(final Date timestamp) {
+        this.mTimestamp = (Date) timestamp.clone();
     }
 
     public Emotions getValue() {
         return mValue;
     }
 
-    public void setValue(Emotions value) {
+    public void setValue(final Emotions value) {
         this.mValue = value;
     }
 }

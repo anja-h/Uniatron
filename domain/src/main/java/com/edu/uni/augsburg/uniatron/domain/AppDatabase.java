@@ -7,8 +7,8 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.edu.uni.augsburg.uniatron.domain.converter.DateConverter;
-import com.edu.uni.augsburg.uniatron.domain.converter.EmotionConverter;
+import com.edu.uni.augsburg.uniatron.domain.converter.DateConverterUtil;
+import com.edu.uni.augsburg.uniatron.domain.converter.EmotionConverterUtil;
 import com.edu.uni.augsburg.uniatron.domain.dao.AppUsageDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.EmotionDao;
 import com.edu.uni.augsburg.uniatron.domain.dao.StepCountDao;
@@ -30,7 +30,7 @@ import com.edu.uni.augsburg.uniatron.domain.model.TimeCreditEntity;
         TimeCreditEntity.class,
         EmotionEntity.class
 })
-@TypeConverters({DateConverter.class, EmotionConverter.class})
+@TypeConverters({DateConverterUtil.class, EmotionConverterUtil.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     /**

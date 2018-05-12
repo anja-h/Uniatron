@@ -10,29 +10,30 @@ import android.support.annotation.NonNull;
  * @param <T> The type of the return value.
  */
 public class AsyncTaskWrapper<T> extends AsyncTask<Void, Void, T> {
-    private final DoInBackground<T> doInBackground;
-    private final OnPostExecute<T> onPostExecute;
+    private final DoInBackground<T> mBackgroundWorker;
+    private final OnPostExecute<T> mForegroundWorker;
 
     /**
      * Ctr.
      *
-     * @param doInBackground The statement which has to be executed in the background-thread.
-     * @param onPostExecute The statment which has to be executed afterwards in the ui-thread.
+     * @param backgroundWorker The statement for the background-thread.
+     * @param foregroundWorker The statment for the ui-thread.
      */
-    public AsyncTaskWrapper(@NonNull final DoInBackground<T> doInBackground,
-                            @NonNull final OnPostExecute<T> onPostExecute) {
-        this.doInBackground = doInBackground;
-        this.onPostExecute = onPostExecute;
+    public AsyncTaskWrapper(@NonNull final DoInBackground<T> backgroundWorker,
+                            @NonNull final OnPostExecute<T> foregroundWorker) {
+        super();
+        this.mBackgroundWorker = backgroundWorker;
+        this.mForegroundWorker = foregroundWorker;
     }
 
     @Override
-    protected T doInBackground(Void... voids) {
-        return doInBackground.doInBackground();
+    protected T doInBackground(final Void... voids) {
+        return mBackgroundWorker.doInBackground();
     }
 
     @Override
-    protected void onPostExecute(T result) {
-        onPostExecute.onPostExecute(result);
+    protected void onPostExecute(final T result) {
+        mForegroundWorker.onPostExecute(result);
     }
 
     /**

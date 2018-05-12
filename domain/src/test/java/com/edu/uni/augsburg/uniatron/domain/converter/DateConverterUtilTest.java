@@ -8,13 +8,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DateConverterTest {
+public class DateConverterUtilTest {
 
     @Test
     public void fromTimestamp() {
         final Date date = new Date();
 
-        final Date result = DateConverter.fromTimestamp(date.getTime());
+        final Date result = DateConverterUtil.fromTimestamp(date.getTime());
 
         assertThat(result, is(equalTo(date)));
     }
@@ -23,7 +23,7 @@ public class DateConverterTest {
     public void dateToTimestamp() {
         final Date date = new Date();
 
-        final Date result = new Date(DateConverter.dateToTimestamp(date));
+        final Date result = new Date(DateConverterUtil.dateToTimestamp(date));
 
         assertThat(result, is(equalTo(date)));
     }

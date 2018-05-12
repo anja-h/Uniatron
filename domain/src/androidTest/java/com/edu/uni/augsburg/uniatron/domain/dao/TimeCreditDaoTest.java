@@ -65,7 +65,7 @@ public class TimeCreditDaoTest {
 
     private TimeCreditEntity createTestData(int month) {
         final TimeCreditEntity timeCreditEntity = new TimeCreditEntity();
-        timeCreditEntity.setTimeInMinutes(5);
+        timeCreditEntity.setTime(5);
         timeCreditEntity.setTimestamp(getDate(1, month, 2018));
         return timeCreditEntity;
     }

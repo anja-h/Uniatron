@@ -97,8 +97,10 @@ public class EmotionDaoTest {
         final LiveData<Double> liveData = mDao
                 .getAverageEmotion(extractMinTimeOfDate(date), extractMaxTimeOfDate(date));
 
+        final double expected = (Emotions.NEUTRAL.ordinal() + Emotions.HAPPINESS.ordinal()) / 2.0;
+
         final Double liveDataValue = getLiveDataValue(liveData);
         assertThat(liveDataValue, is(notNullValue()));
-        assertThat(liveDataValue, is(1.5));
+        assertThat(liveDataValue, is(expected));
     }
 }

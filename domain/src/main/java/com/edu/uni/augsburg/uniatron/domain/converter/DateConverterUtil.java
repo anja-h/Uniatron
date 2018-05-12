@@ -2,7 +2,7 @@ package com.edu.uni.augsburg.uniatron.domain.converter;
 
 import android.arch.persistence.room.TypeConverter;
 
-import com.edu.uni.augsburg.uniatron.model.Emotions;
+import java.util.Date;
 
 /**
  * A converter for the {@link com.edu.uni.augsburg.uniatron.domain.AppDatabase}
@@ -10,8 +10,8 @@ import com.edu.uni.augsburg.uniatron.model.Emotions;
  *
  * @author Fabio Hellmann
  */
-public final class EmotionConverter {
-    private EmotionConverter() {
+public final class DateConverterUtil {
+    private DateConverterUtil() {
     }
 
     /**
@@ -21,8 +21,8 @@ public final class EmotionConverter {
      * @return The date.
      */
     @TypeConverter
-    public static Emotions fromRawValue(Integer value) {
-        return value == null ? null : Emotions.values()[value];
+    public static Date fromTimestamp(final Long value) {
+        return value == null ? null : new Date(value);
     }
 
     /**
@@ -32,7 +32,7 @@ public final class EmotionConverter {
      * @return The long.
      */
     @TypeConverter
-    public static Integer fromRealValue(Emotions date) {
-        return date == null ? null : date.ordinal();
+    public static Long dateToTimestamp(final Date date) {
+        return date == null ? null : date.getTime();
     }
 }

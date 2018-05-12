@@ -57,7 +57,7 @@ public final class DataRepository {
         new AsyncTaskWrapper<>(
                 () -> {
                     final TimeCreditEntity timeCreditEntity = new TimeCreditEntity();
-                    timeCreditEntity.setTimeInMinutes(timeCredits.getTimeInMinutes());
+                    timeCreditEntity.setTime(timeCredits.getTimeInMinutes());
                     timeCreditEntity.setStepCount(timeCredits.getStepCount());
                     timeCreditEntity.setTimestamp(new Date());
                     mDatabase.timeCreditDao().add(timeCreditEntity);
@@ -164,19 +164,19 @@ public final class DataRepository {
     /**
      * Add the usage time of an app.
      *
-     * @param appName            The name of the app which was used.
-     * @param usageTimeInSeconds The time of usage.
+     * @param appName The name of the app which was used.
+     * @param time    The time of usage.
      * @return The app usage data.
      */
     public LiveData<AppUsage> addAppUsage(@NonNull final String appName,
-                                          final int usageTimeInSeconds) {
+                                          final int time) {
         final MutableLiveData<AppUsage> observable = new MutableLiveData<>();
         new AsyncTaskWrapper<>(
                 () -> {
                     final AppUsageEntity appUsageEntity = new AppUsageEntity();
                     appUsageEntity.setAppName(appName);
                     appUsageEntity.setTimestamp(new Date());
-                    appUsageEntity.setUsageTimeInSeconds(usageTimeInSeconds);
+                    appUsageEntity.setTime(time);
                     mDatabase.appUsageDao().add(appUsageEntity);
                     return appUsageEntity;
                 },
@@ -209,8 +209,8 @@ public final class DataRepository {
                 mDatabase.appUsageDao().loadAppUsageTime(dateFrom, dateTo),
                 appUsageList -> {
                     final HashMap<String, Integer> map = new HashMap<>();
-                    for (AppUsage usage : appUsageList) {
-                        map.put(usage.getAppName(), usage.getUsageTimeInSeconds());
+                    for (final AppUsage usage : appUsageList) {
+                        map.put(usage.getAppName(), usage.getTime());
                     }
                     return map;
                 });
@@ -240,8 +240,8 @@ public final class DataRepository {
                 mDatabase.appUsageDao().loadAppUsagePercent(dateFrom, dateTo),
                 appUsageList -> {
                     final HashMap<String, Double> map = new HashMap<>();
-                    for (AppUsage usage : appUsageList) {
-                        map.put(usage.getAppName(), usage.getUsageTimeInSeconds() / 100.0);
+                    for (final AppUsage usage : appUsageList) {
+                        map.put(usage.getAppName(), usage.getTime() / 100.0);
                     }
                     return map;
                 });
@@ -303,9 +303,13 @@ public final class DataRepository {
         final Date dateTo = extractMaxTimeOfDate(date);
         return Transformations.map(
                 mDatabase.emotionDao().getAll(dateFrom, dateTo),
-                data -> data != null ?
-                        Stream.of(data).map(item -> item).collect(Collectors.toList()) :
-                        Collections.emptyList()
+                data -> {
+                    if (data == null) {
+                        return Collections.emptyList();
+                    } else {
+                        return Stream.of(data).map(item -> item).collect(Collectors.toList());
+                    }
+                }
         );
     }
 
@@ -321,15 +325,23 @@ public final class DataRepository {
         return Transformations.map(
                 mDatabase.emotionDao().getAverageEmotion(dateFrom, dateTo),
                 data -> {
-                    if (data != null) {
+                    if (data == null) {
+                        return Emotions.NEUTRAL;
+                    } else {
                         final int index = (int) Math.round(data);
                         return Emotions.values()[index];
                     }
-                    return Emotions.NEUTRAL;
                 }
         );
     }
 
+    /**
+     * Get the summaries for a specified date range.
+     *
+     * @param dateFrom The date to start searching.
+     * @param dateTo   The date to end searching.
+     * @return The summaries.
+     */
     public LiveData<List<Summary>> getSummary(@NonNull final Date dateFrom,
                                               @NonNull final Date dateTo) {
         return Transformations.map(

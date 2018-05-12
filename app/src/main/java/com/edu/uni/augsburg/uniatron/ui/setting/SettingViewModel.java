@@ -44,8 +44,7 @@ public class SettingViewModel extends AndroidViewModel {
      * @return The app-names.
      */
     @NonNull
-    public LiveData<Set<String>> getInstalledApps(
-            @NonNull final Context context) {
+    public LiveData<Set<String>> getInstalledApps(@NonNull final Context context) {
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
